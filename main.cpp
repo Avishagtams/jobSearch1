@@ -1,15 +1,16 @@
 #include <iostream>
-using namespace std;
 #include <vector>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <cstring>
 #include <string>
+
+using namespace std;
+
 void CreateEmploy();
 void readFile(const string& filename, vector<string>& data);
-bool loginCandidate();
-bool loginEmployer();
+void loginCandidate();
+void loginEmployer();
 void registerCandidate();
 void registerEmployer();
 void employerMenu();
@@ -70,6 +71,7 @@ void registerEmployer() {
         file <<"id: " << id << " password: " << password  <<" Name: "<< name << "\n";
         file.close();
         cout << "Registration employer successful.\n";
+        employerMenu();
     } else {
         cerr << "Unable to open file for registration.\n";
     }
@@ -89,9 +91,10 @@ void registerCandidate() {
     // TO DO: תוסיפי פה את כל השדות לפי דרישה מס 2 ותדאגי לקליטה שלהם בשורה 41
     ofstream file("candidate.txt", ios::app);
     if (file.is_open()) {
-        file <<"id: " << id << "password: " << password  << "\n";
+        file <<"id: " << id << " password: " << password  << "\n";
         file.close();
         cout << "Registration candidate successful.\n";
+        candidateMenu();
     } else {
         cerr << "Unable to open file for registration.\n";
     }
@@ -108,7 +111,7 @@ void readFile(const string& filename, vector<string>& data) {
     }
 }
 //if employer in text
-bool loginEmployer() {
+void loginEmployer() {
     string i, p;
     cout << "Enter id: " << endl;
     cin >> i;
@@ -117,7 +120,6 @@ bool loginEmployer() {
     vector<string> employers;
     readFile("employers.txt", employers);
     for (const auto& emp : employers) {
-
         size_t pos = emp.find(" ");
         if (pos != string::npos) {
             string empId = emp.substr(4, i.size());
@@ -125,15 +127,18 @@ bool loginEmployer() {
             if (empId == i && empPass == p) {
                 cout << "Login employer successful.\n";
                 employerMenu();
-                return true;
-            }
+            } else {
+            cout << "Employer does not exist in the system. Please try again!\n\n";
+            loginEmployer();
+        }
         }
     }
-    cout << "Invalid credentials. Please try again.\n";
-    return false;
 }
+
+
+
 //if candidate in text
-bool loginCandidate() {
+void loginCandidate() {
     string i, p;
     cout << "Enter id: " << endl;
     cin >> i;
@@ -149,19 +154,22 @@ bool loginCandidate() {
             if (empId == i && empPass == p) {
                 cout << "Login candidate successful.\n";
                 candidateMenu();
-                return true;
+            } else{
+                cout << "Candidate does not exist in the system. Please try again!\n\n";
+                loginCandidate();
             }
+
         }
     }
-    cout << "Invalid credentials. Please try again.\n";
-    return false;
+
 }
 //after candidate log in
 void candidateMenu() {
     // Implement candidate menu options as per requirements
     // You can add options like searching for jobs, submitting resumes, etc.
     int choice;
-    cout << "Candidate Menu" << endl;
+    cout << endl << "Welcome to Candidate Menu!" << endl;
+    cout << "Enter your choice: ";
     cout << "1. Search for Jobs" << endl;
     cout << "2. Submit Resume" << endl;
     cout << "3. View Submission History" << endl;
@@ -200,14 +208,16 @@ void employerMenu() {
     // Implement employer menu options as per requirements
     // You can add options like publishing, deleting, and updating jobs, viewing submissions, etc.
     int choice;
-    cout << "Employer Menu" << endl;
+
+    cout << endl << "Welcome to Employer Menu!" << endl;
+    cout << "Enter your choice: ";
     cout << "1. Publish a Job" << endl;
     cout << "2. Delete a Job" << endl;
     cout << "3. Update a Job" << endl;
     cout << "4. View Published Jobs" << endl;
     cout << "5. View Candidate Submissions for a Job" << endl;
     cout << "6. Logout" << endl;
-    cout << "Enter your choice: ";
+
     cin >> choice;
 
     switch (choice) {
