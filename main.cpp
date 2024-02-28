@@ -122,12 +122,12 @@ void registerCandidate() {
         file <<"ID: " << id <<endl;
         file <<"Password: "<< password  <<endl;
         file <<"Name: "<<name<<endl;
-        file <<"Birth date: "<<birth_date<<endl;
+        /*file <<"Birth date: "<<birth_date<<endl;
         file <<"Email: "<<email<<endl;
         file <<"Phone number: "<<phone<<endl;
         file <<"Address: "<<address<<endl;
         file <<"Education: "<<education<<endl;
-        file <<"Skills: "<<skills<<endl;
+        file <<"Skills: "<<skills<<endl;*/
         file <<endl;
         file.close();
         cout << "Registration candidate successful.\n";
@@ -437,32 +437,19 @@ void searchByDate() {
     string date;
     cout << "Enter the date: " << endl;
     cin >> date;
-    ifstream inputFile("job.txt");
-    if (inputFile.is_open()) {
-        string line;
-        vector<string> found_jobs;  // To store found jobs
+    ifstream file("job.txt");
+    string line;
 
-        while (getline(inputFile, line)) {
-            // Assuming the date is at a specific position in the line (adjust accordingly)
-            string dateInLine = line.substr(0, 20); // Assuming the date is 20 characters starting at position 0
-
-            if (dateInLine == date) {
-                // Store the job details in the vector
-                found_jobs.push_back(line);
+    if (file.is_open()) {
+        cout << "New Jobs Matching Your Field:\n";
+        while (getline(file, line)) {
+            if (line.find("Published: " + date) != string::npos) {
+                cout << line << endl;
             }
         }
-
-        // Display the found jobs
-        if (!found_jobs.empty()) {
-            cout << "Jobs found for the specified date: " << endl;
-            for (const auto &job: found_jobs) {
-                cout << job << endl;
-            }
-        } else {
-            cout << "No jobs found for the specified date. " << endl;
-        }
-
-        inputFile.close();
+        file.close();
+    } else {
+        cerr << "Unable to open file.\n";
     }
 }
 
@@ -471,32 +458,19 @@ void searchByName() {
     string name;
     cout << "Enter the job's name you want: " << endl;
     cin >> name;
-    ifstream inputFile("job.txt");
-    if (inputFile.is_open()) {
-        string line;
-        vector<string> foundJobs;  // To store the found jobs
+    ifstream file("job.txt");
+    string line;
 
-        // Read each line from the file
-        while (getline(inputFile, line)) {
-            // Assuming the job name is at a specific position in the line
-            string nameInLine = line.substr(0, 20); // Assuming the name is 0 characters starting at position 20
-
-            if (nameInLine == name) {
-                // Store the job details in the vector
-                foundJobs.push_back(line);
+    if (file.is_open()) {
+        cout << "New Jobs Matching Your Field:\n";
+        while (getline(file, line)) {
+            if (line.find("Job name: " + name) != string::npos) {
+                cout << line << endl;
             }
         }
-
-        // Display the found jobs
-        if (!foundJobs.empty()) {
-            cout << "Jobs found for the specified name: " << endl;
-            for (const auto &job: foundJobs) {
-                cout << job << endl;
-            }
-        } else {
-            cout << "No jobs found for the specified name." << endl;
-        }
-        inputFile.close();
+        file.close();
+    } else {
+        cerr << "Unable to open file.\n";
     }
 }
 
@@ -505,32 +479,19 @@ void searchByArea() {
     string area;
     cout << "Enter the area you prefer to work in: " << endl;
     cin >> area;
-    ifstream inputFile("job.txt");
-    if (inputFile.is_open()) {
-        string line;
-        vector<string> foundJobs;  // To store found jobs
+    ifstream file("job.txt");
+    string line;
 
-        // Read each line from the file
-        while (getline(inputFile, line)) {
-            // Assuming the area is at a specific position in the line
-            string areaInLine = line.substr(0, 20); // Assuming the area is 20 characters starting at position 0
-
-            if (areaInLine == area) {
-                // Store the job details in the vector
-                foundJobs.push_back(line);
+    if (file.is_open()) {
+        cout << "New Jobs Matching Your Field:\n";
+        while (getline(file, line)) {
+            if (line.find("Area: " + area) != string::npos) {
+                cout << line << endl;
             }
         }
-
-        // Display the found jobs
-        if (!foundJobs.empty()) {
-            cout << "Jobs found for the specified area: " << endl;
-            for (const auto &job: foundJobs) {
-                cout << job << endl;
-            }
-        } else {
-            cout << "No jobs found for the specified area. " << endl;
-        }
-        inputFile.close();
+        file.close();
+    } else {
+        cerr << "Unable to open file.\n";
     }
 }
 
@@ -539,33 +500,19 @@ void searchByYears(){
     int year_experience;
     cout<<"Enter the years of experience you want: "<<endl;
     cin>>year_experience;
-    ifstream inputFile("job.txt");
-    if (inputFile.is_open()) {
-        string line;
-        vector<std::string> foundJobs;  // To store found jobs
+    ifstream file("job.txt");
+    string line;
 
-        // Read each line from the file
-        while (getline(inputFile, line)) {
-            // Assuming the years of experience is at a specific position in the line
-            string expInLine = line.substr(0, 2); // Assuming the experience is 2 characters starting at position 50
-
-            int experience = stoi(expInLine);
-            while(experience >= year_experience){
-                foundJobs.push_back(line);
+    if (file.is_open()) {
+        cout << "New Jobs Matching Your Field:\n";
+        while (getline(file, line)) {
+            if (line.find(&"Years of experience required: " [ year_experience]) != string::npos) {
+                cout << line << endl;
             }
-
         }
-
-        // Display the found jobs
-        if (!foundJobs.empty()) {
-            cout << "Jobs found for the specified years of experience or more: "<<endl;
-            for (const auto& job : foundJobs) {
-                cout << job <<endl;
-            }
-        } else {
-            cout << "No jobs found for the specified years of experience or more. "<<endl;
-        }
-        inputFile.close();
+        file.close();
+    } else {
+        cerr << "Unable to open file.\n";
     }
 }
 
@@ -574,62 +521,40 @@ void searchBySalary(){
     double salary;
     cout<<"Enter the salary you want: "<<endl;
     cin>>salary;
-    ifstream inputFile("job.txt");
-    if (inputFile.is_open()) {
-        string line;
-        vector<std::string> foundJobs;  // To store found jobs
+    ifstream file("job.txt");
+    string line;
 
-        // Read each line from the file
-        while (getline(inputFile, line)) {
-            // Assuming the salary is at a specific position in the line
-            string salaryInLine = line.substr(0, 7); // Assuming the salary is 7 characters starting at position 0
-
-            double _salary = stod(salaryInLine);
-            while(_salary >= salary){
-                foundJobs.push_back(line);
+    if (file.is_open()) {
+        cout << "New Jobs Matching Your Field:\n";
+        while (getline(file, line)) {
+            string _salary = to_string(salary);
+            if (line.find("The salary is: " + _salary) != string::npos) {
+                cout << line << endl;
             }
         }
-        if (!foundJobs.empty()) {
-            cout << "Jobs found for the specified salary or more: "<<endl;
-            for (const auto& job : foundJobs) {
-                cout << job <<endl;
-            }
-        } else {
-            cout << "No jobs found for the specified salary or more. "<<endl;
-        }
-        inputFile.close();
+        file.close();
+    } else {
+        cerr << "Unable to open file.\n";
     }
 }
 
 // function to search jobs by a specific type
-void searchByType(){
+void searchByType() {
     string type;
-    cout<<"Enter the job's type you prefer: full-time / part-time"<<endl;
-    cin>>type;
-    ifstream inputFile("job.txt");
-    if (inputFile.is_open()) {
-        string line;
-        vector<string> foundJobs;  // To store found jobs
+    cout << "Enter the job's type you prefer: full-time / part-time" << endl;
+    cin >> type;
+    ifstream file("job.txt");
+    string line;
 
-        // Read each line from the file
-        while (getline(inputFile, line)) {
-            // Assuming the job type is at a specific position in the lin
-            string typeInLine = line.substr(0, 10); // Assuming the type is 10 characters starting at position 0
-
-            if (typeInLine == type) {
-                // Store the job details in the vector
-                foundJobs.push_back(line);
+    if (file.is_open()) {
+        cout << "New Jobs Matching Your Field:\n";
+        while (getline(file, line)) {
+            if (line.find("Job's type: " + type) != string::npos) {
+                cout << line << endl;
             }
         }
-        // Display the found jobs
-        if (!foundJobs.empty()) {
-            cout << "Jobs found for the specified type (" << type << ")" << endl;
-            for (const auto &job: foundJobs) {
-                cout << job << endl;
-            }
-        } else {
-            cout << "No jobs found for the specified type (" << type << ")" << endl;
-        }
-        inputFile.close();
+        file.close();
+    } else {
+        cerr << "Unable to open file.\n";
     }
 }
