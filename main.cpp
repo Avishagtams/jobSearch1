@@ -3,6 +3,10 @@
 #include <fstream>
 #include <cstring>
 #include <string>
+#include <cstdio>
+/*#include <poppler/cpp/poppler-document.h>
+#include <poppler/cpp/poppler-page.h>*/
+
 
 using namespace std;
 
@@ -14,7 +18,7 @@ void registerCandidate();
 void registerEmployer();
 void employerMenu();
 void candidateMenu();
-void addJob(const string &dateJ,const string &nameJ, const string &areaJ,int years_experienceJ,double salaryJ,const string &typeJ);
+void addJob(/*const string &dateJ,const string &nameJ, const string &areaJ,int years_experienceJ,double salaryJ,const string &typeJ*/);
 void searchForJob();
 void searchByDate();
 void searchByName();
@@ -22,6 +26,8 @@ void searchByArea();
 void searchByYears();
 void searchBySalary();
 void searchByType();
+void publishJob();
+//void eraseJobFile();
 int main() {
     int choice;
 
@@ -57,7 +63,7 @@ int main() {
             cout << "Invalid choice. Please enter again!" << endl<<endl;
             return main();
     }
-
+    //eraseJobFile();
     return 0;
 }//-----------------------------------------------------job search system
 
@@ -96,38 +102,48 @@ void registerEmployer() {
 void registerCandidate() {
     string id,password,name,birth_date,email,phone,address,education,skills;
     cout<< "Enter your name: "<<endl;
-    cin>>name;
+    cin>>name; // TODO check if: 1.there is numbers in the name ,2.check if there is two same names
     while (id.size()!=9) {
         cout << "Enter your id: " << endl;
-        cin >> id;
+        cin >> id; // TODO check if there is no letters in the id
     }
-
+    cin.ignore();
     cout<< "Enter your password: "<<endl;
     cin>>password;
+
+    cin.ignore();
     cout<<"Enter your birth date: "<<birth_date<<endl;
-    cin>>birth_date;
+    getline(cin,birth_date);
+
     cout<<"Enter your email: "<<email<<endl;
     cin>>email;
+
+    cin.ignore();
     cout<<"Enter your phone number: "<<phone<<endl;
-    cin>>phone;
+    getline(cin,phone);
+
     cout<<"Enter your address: "<<address<<endl;
-    cin>>address;
+    getline(cin,address);
+
     cout<<"Enter your education: High school level / BA / Master's degree / Doctorate"<<endl;
-    cin>>education;
+    cin.ignore();
+    getline(cin,education);
+
     cout<<"Enter your skills: (for example - increases head, highly motivated...)"<<endl;
-    cin>>skills;
+    cin.ignore();
+    getline(cin,skills);
 
     ofstream file("candidate.txt", ios::app);
     if (file.is_open()) {
         file <<"ID: " << id <<endl;
         file <<"Password: "<< password  <<endl;
         file <<"Name: "<<name<<endl;
-        /*file <<"Birth date: "<<birth_date<<endl;
+        file <<"Birth date: "<<birth_date<<endl;
         file <<"Email: "<<email<<endl;
         file <<"Phone number: "<<phone<<endl;
         file <<"Address: "<<address<<endl;
         file <<"Education: "<<education<<endl;
-        file <<"Skills: "<<skills<<endl;*/
+        file <<"Skills: "<<skills<<endl;
         file <<endl;
         file.close();
         cout << "Registration candidate successful.\n";
@@ -159,8 +175,8 @@ void loginEmployer() {
     for (const auto& emp : employers) {
         size_t pos = emp.find(" ");
         if (pos != string::npos) {
-            string empId = emp.substr(4, i.size());
-            string empPass = emp.substr(24,p.size());
+            string empId = emp.substr(0, i.size());
+            string empPass = emp.substr(0,p.size());
             if (empId == i && empPass == p) {
                 cout << "Login employer successful.\n";
                 employerMenu();
@@ -186,8 +202,8 @@ void loginCandidate() {
     for (const auto& emp : candidate) {
         size_t pos = emp.find(" ");
         if (pos != string::npos) {
-            string empId = emp.substr(4, i.size());
-            string empPass = emp.substr(24,p.size());
+            string empId = emp.substr(0, i.size());
+            string empPass = emp.substr(0,p.size());
             if (empId == i && empPass == p) {
                 cout << "Login candidate successful.\n";
                 candidateMenu();
@@ -218,7 +234,7 @@ void candidateMenu() {
     switch (choice) {
         case 1:
             // Implement job search functionality
-            searchForJob();
+            searchForJob();//TODO fix it
             break;
         case 2:
             // Implement resume submission functionality
@@ -248,7 +264,7 @@ void employerMenu() {
     int choice;
 
     cout << endl << "Welcome to Employer Menu!" << endl;
-    cout << "Enter your choice: ";
+    cout << "Enter your choice: "<<endl;
     cout << "1. Publish a Job" << endl;
     cout << "2. Delete a Job" << endl;
     cout << "3. Update a Job" << endl;
@@ -260,7 +276,7 @@ void employerMenu() {
 
     switch (choice) {
         case 1:
-            // Implement publish job functionality
+            addJob();//works
             break;
         case 2:
             // Implement delete job functionality
@@ -291,15 +307,40 @@ void employerMenu() {
 //-----------------------------------------------------jobs
 
 // Method to add a new jobs from text file
-void addJob(const string &dateJ,const string &nameJ,const string &areaJ,int years_experienceJ,double salaryJ,const string &typeJ) {
+void addJob(){
+    string dateJ,nameJ,areaJ,typeJ;
+    int years_experienceJ;
+    double salaryJ;
+    cout<<"Enter published date"<<endl;
+    cin.ignore();
+    getline(cin,dateJ);
+
+    cout<<"Enter the years of experience required"<<endl;
+    cin>>years_experienceJ;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout<<"Enter the job's salary"<<endl;
+    cin>>salaryJ;
+
+    cout<<"Enter the job's name"<<endl;
+    cin.ignore();
+    getline(cin,nameJ);
+
+    cout<<"Enter the job's area"<<endl;
+    getline(cin,areaJ);
+
+    cout<<"Enter the job's type (full-time / part-time)"<<endl;
+    getline(cin,typeJ);
+
+
     ofstream file("job.txt", ios::app);
     if (file.is_open()) {
-        file <<"Published " << dateJ <<endl;
         file <<"Job name: " << nameJ <<endl;
         file <<"Area: " << areaJ <<endl;
         file <<"Years of experience required: "<<years_experienceJ<<endl;
         file <<"The salary is: "<<salaryJ<<endl;
         file <<"Job's type: "<<typeJ<<endl; //if it is a full-time job or a part-time job
+        file <<"Published: " << dateJ <<endl;
         file << endl;
         file.close();
         cout << "add job successful.\n";
@@ -321,7 +362,7 @@ void deleteJob(const string &nameToDelete) {
     bool found = false;
     while (getline(inputFile, line)) {
         // Check if the line contains the job name to delete
-        if (line.find("Name: " + nameToDelete) != string::npos) {
+        if (line.find("Job name: " + nameToDelete) != string::npos) {
             found = true;
             continue; // Skip this line, effectively deleting it
         }
@@ -357,7 +398,7 @@ void editJob(const string &nameToEdit,const string &n_dateJ,const string &n_name
         if (line.find("Name: " + nameToEdit) != string::npos) {
             found = true;
             // Modify the line with new details
-            outputFile <<"Published " << n_dateJ <<endl;
+            outputFile <<"Published: " << n_dateJ <<endl;
             outputFile <<"Job name: " << n_nameJ <<endl;
             outputFile <<"Area: " << n_areaJ <<endl;
             outputFile <<"Years of experience required: "<<n_years_experienceJ<<endl;
@@ -413,43 +454,106 @@ void searchForJob(){
         cin>>choice;
     }
     if(choice == 1){
-        searchByDate();
+        searchByDate();//TODO check why it doesnt work
     }
     if(choice == 2){
-        searchByName();
+        searchByName(); //works
     }
     if(choice == 3){
-        searchByArea();
+        searchByArea();//TODO check why it doesnt work
     }
     if(choice == 4){
-        searchByYears();
+        searchByYears();//TODO check why it doesnt work
     }
     if(choice == 5){
-        searchBySalary();
+        searchBySalary();//TODO check why it doesnt work
     }
     if(choice == 6){
-        searchByType();
+        searchByType();//TODO check why it doesnt work
     }
 }
 
 // function to search jobs by a specific published date
 void searchByDate() {
-    string date;
-    cout << "Enter the date: " << endl;
-    cin >> date;
+    /*string date;
+    cout << "Enter the job's date you want: " << endl;
+    cin.ignore(); // Clear input buffer
+    getline(cin, date);
+
     ifstream file("job.txt");
-    string line;
 
     if (file.is_open()) {
-        cout << "New Jobs Matching Your Field:\n";
+        string line;
+        bool found = false; // Flag to check if job was found
+
         while (getline(file, line)) {
             if (line.find("Published: " + date) != string::npos) {
+                // Print the entire job information block
                 cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
             }
         }
+
         file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
     } else {
-        cerr << "Unable to open file.\n";
+        cerr << "Unable to open file." << endl;
+    }*/
+    string date;
+    cout << "Enter the job's date you want: " << endl;
+    cin.ignore(); // Clear input buffer
+    getline(cin, date);
+
+    ifstream file("job.txt");
+
+    if (file.is_open()) {
+        string line;
+        bool found = false; // Flag to check if job was found
+        const int linesBefore = 6;
+        int linesCount = 1;
+        string previousLines[linesBefore];
+
+        while (getline(file, line)) {
+            // Store the last 'linesBefore' lines
+            previousLines[linesCount % linesBefore] = line;
+
+            if (line.find("Published: " + date) != string::npos) {
+                // Print the last 'linesBefore' lines before the match
+                for (int i = 1; i <= linesBefore; ++i) {
+                    cout << previousLines[(linesCount - i + linesBefore) % linesBefore] << endl;
+                }
+
+                // Print the entire job information block
+                cout << line << endl;
+
+                // Print the rest of the information until an empty line is encountered
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
+            }
+
+            linesCount++;
+        }
+
+        file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
+    } else {
+        cerr << "Unable to open file." << endl;
     }
 }
 
@@ -457,104 +561,196 @@ void searchByDate() {
 void searchByName() {
     string name;
     cout << "Enter the job's name you want: " << endl;
-    cin >> name;
+    cin.ignore(); // Clear input buffer
+    getline(cin, name);
+
     ifstream file("job.txt");
-    string line;
 
     if (file.is_open()) {
-        cout << "New Jobs Matching Your Field:\n";
+        string line;
+        bool found = false; // Flag to check if job was found
+
         while (getline(file, line)) {
             if (line.find("Job name: " + name) != string::npos) {
+                // Print the entire job information block
                 cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
             }
         }
+
         file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
     } else {
-        cerr << "Unable to open file.\n";
+        cerr << "Unable to open file." << endl;
     }
 }
+
 
 // function to search jobs by a specific published area
 void searchByArea() {
     string area;
-    cout << "Enter the area you prefer to work in: " << endl;
-    cin >> area;
+    cout << "Enter the job's area: " << endl;
+    cin.ignore(); // Clear input buffer
+    getline(cin, area);
+
     ifstream file("job.txt");
-    string line;
 
     if (file.is_open()) {
-        cout << "New Jobs Matching Your Field:\n";
+        string line;
+        bool found = false; // Flag to check if job was found
+
         while (getline(file, line)) {
             if (line.find("Area: " + area) != string::npos) {
+                // Print the entire job information block
                 cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
             }
         }
+
         file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
     } else {
-        cerr << "Unable to open file.\n";
+        cerr << "Unable to open file." << endl;
     }
 }
 
 // function to search jobs by a specific published years of experience
 void searchByYears(){
-    int year_experience;
-    cout<<"Enter the years of experience you want: "<<endl;
-    cin>>year_experience;
+    int years_experience;
+    cout << "Enter the job's years experience required: " << endl;
+    cin.ignore(); // Clear input buffer
+    cin>>years_experience;
+
     ifstream file("job.txt");
-    string line;
 
     if (file.is_open()) {
-        cout << "New Jobs Matching Your Field:\n";
+        string line;
+        bool found = false; // Flag to check if job was found
+
         while (getline(file, line)) {
-            if (line.find(&"Years of experience required: " [ year_experience]) != string::npos) {
+            if (line.find(&"Years of experience required: " [ years_experience]) != string::npos) {
+                // Print the entire job information block
                 cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
             }
         }
+
         file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
     } else {
-        cerr << "Unable to open file.\n";
+        cerr << "Unable to open file." << endl;
     }
 }
 
 // function to search jobs by a specific published salary
 void searchBySalary(){
     double salary;
-    cout<<"Enter the salary you want: "<<endl;
+    cout << "Enter the job's salary: " << endl;
+    cin.ignore(); // Clear input buffer
     cin>>salary;
+
     ifstream file("job.txt");
-    string line;
 
     if (file.is_open()) {
-        cout << "New Jobs Matching Your Field:\n";
+        string line;
+        bool found = false; // Flag to check if job was found
+
         while (getline(file, line)) {
             string _salary = to_string(salary);
             if (line.find("The salary is: " + _salary) != string::npos) {
+                // Print the entire job information block
                 cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
             }
         }
+
         file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
     } else {
-        cerr << "Unable to open file.\n";
+        cerr << "Unable to open file." << endl;
     }
 }
 
 // function to search jobs by a specific type
 void searchByType() {
     string type;
-    cout << "Enter the job's type you prefer: full-time / part-time" << endl;
-    cin >> type;
+    cout << "Enter the job's type (full-time / part-time): " << endl;
+    cin.ignore(); // Clear input buffer
+    getline(cin, type);
+
     ifstream file("job.txt");
-    string line;
 
     if (file.is_open()) {
-        cout << "New Jobs Matching Your Field:\n";
+        string line;
+        bool found = false; // Flag to check if job was found
+
         while (getline(file, line)) {
             if (line.find("Job's type: " + type) != string::npos) {
+                // Print the entire job information block
                 cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                found = true; // Job found
+                break;
             }
         }
+
         file.close();
+
+        if (!found) {
+            cout << "Job not found." << endl;
+        }
     } else {
-        cerr << "Unable to open file.\n";
+        cerr << "Unable to open file." << endl;
     }
 }
+
+/*void eraseJobFile() {
+    std::ofstream file("job.txt", std::ios::trunc);
+
+    if (file.is_open()) {
+        std::cout << "Job file erased successfully.\n";
+        file.close();
+    } else {
+        std::cerr << "Unable to open file for erasing.\n";
+    }
+}*/
