@@ -7,8 +7,7 @@
 /*#include <poppler/cpp/poppler-document.h>
 #include <poppler/cpp/poppler-page.h>*/
 using namespace std;
-
-void CreateEmploy();
+void menuUpdate();
 void readFile(const string& filename, vector<string>& data);
 void loginCandidate();
 void loginEmployer();
@@ -24,7 +23,11 @@ void searchByArea();
 void searchByYears();
 void searchBySalary();
 void searchByType();
-void publishJob();
+void viewPublishedJobs();
+void displayEditMenu();
+void deleteJob();
+void editJobByName(const string& publisher);
+void editJobByArea(const string& publisher);
 void mainMenu();
 //void eraseJobFile();
 int main() {
@@ -294,16 +297,21 @@ void employerMenu() {
             addJob();//works
             break;
         case 2:
+            deleteJob();
+
             // Implement delete job functionality
             break;
         case 3:
             // Implement update job functionality
+            menuUpdate();
             break;
         case 4:
             // Implement view published jobs functionality
+            viewPublishedJobs();
             break;
         case 5:
             // Implement view candidate submissions functionality
+
             break;
         case 6:
             cout << "Logging out..." << endl;
@@ -320,11 +328,137 @@ void employerMenu() {
 }
 
 //-----------------------------------------------------jobs
+//--------updateJob
+void displayEditMenu() {
+    cout << "1. Edit job by name" << endl;
+    cout << "2. Edit job by area" << endl;
+    cout << "3. Edit job by any text" << endl;
+    cout << "4. Exit" << endl;
+}
+//
+void menuUpdate(){
+    string publisherName;
+    cout << "Enter your name as publisher: "<<endl;
+    cin >> publisherName;
 
-// Method to add a new jobs from text file
+    int choice;
+    do {
+        displayEditMenu();
+        cout << "Enter your choice: "<<endl;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                editJobByName(publisherName);
+                break;
+            case 2:
+                //editJobByArea(publisherName);
+                editJobByArea(publisherName);
+                break;
+            case 3:
+                //editJobByAnyText(publisherName);
+                break;
+            case 4:
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 4);
+}
+
+
+//change name
+void editJobByName(const string& publisher) {
+    ifstream inputFile("job.txt");
+    ofstream outputFile("temp.txt");
+    string line,nameToEdit,nameNew;
+    cout<<"Enter the name that you want to edit: "<<endl;
+    cin>>nameToEdit;
+    cout<<"Enter the  new name for job: "<<endl;
+    cin>>nameNew;
+
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line)) {
+        // Check if the line contains the job name to edit
+        if (line.find("publish by: " + publisher) != string::npos && line.find("Job name: " + nameToEdit) != string::npos) {
+            found = true;
+            // Modify the line with new details
+            outputFile << "job name: "<<nameNew<<" publish by: "<< publisher<<endl ;
+        } else {
+            outputFile << line << endl;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("job.txt");         // Remove the old file
+        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        cout << "Job: " << nameToEdit << " edited successfully.\n";
+    } else {
+        cout << "Job: " << nameToEdit << " not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+void editJobByArea(const string& publisher) {
+    // TO DO: The code is incorrect
+    string currentArea, newArea;
+    cout << "Enter the area of the job you want to update: ";
+    cin >> currentArea;
+    cout << "Enter the new area: ";
+    cin >> newArea;
+
+    ifstream inputFile("job.txt");
+    ofstream outputFile("temp.txt");
+    string line;
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line)) {
+        // Check if the line contains the job name to edit
+        if (line.find("publisher by: " + publisher) != string::npos) {
+            found = true;
+            // Modify the line with new details
+            outputFile << " area: " << newArea << "." << endl;
+        } else {
+            outputFile << line << endl;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("job.txt");         // Remove the old file
+        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        cout << "Job '" << currentArea<< "' edited successfully.\n";
+    } else {
+        cout << "Job '" << currentArea << "' not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+
+
+
 void addJob(){
-    string dateJ,nameJ,areaJ,typeJ;
+    string dateJ,nameJ,nameE,areaJ,typeJ;
     int years_experienceJ, salaryJ;
+    cout<<"Enter the your name"<<endl;
+    cin.ignore();
+    getline(cin,nameE);
+
     cout<<"Enter published date"<<endl;
     cin.ignore();
     getline(cin,dateJ);
@@ -349,7 +483,7 @@ void addJob(){
 
     ofstream file("job.txt", ios::app);
     if (file.is_open()) {
-        file <<"Job name: " << nameJ <<endl;
+        file <<"Job name: " << nameJ <<" publish by: "<<nameE<<endl;
         file <<"Area: " << areaJ <<endl;
         file <<"Years of experience required: "<<years_experienceJ<<endl;
         file <<"The salary is: "<<salaryJ<<endl;
@@ -363,7 +497,14 @@ void addJob(){
     }
 }
 // Method to delete job from text file
-void deleteJob(const string &nameToDelete) {
+void deleteJob() {
+    string nameE, nameToDelete;
+    cout << "Enter your name: " << endl;
+    cin >> nameE;
+    cout << "Enter the name of the job that you want to delete: " << endl;
+    cin.ignore(); // Ignore the newline character from previous input
+    getline(cin, nameToDelete);
+
     ifstream inputFile("job.txt");
     ofstream outputFile("temp.txt");
     string line;
@@ -374,28 +515,38 @@ void deleteJob(const string &nameToDelete) {
     }
 
     bool found = false;
+    bool deleteMode = false; // Flag to indicate when to start deleting lines
+
     while (getline(inputFile, line)) {
-        // Check if the line contains the job name to delete
-        if (line.find("Job name: " + nameToDelete) != string::npos) {
+        // Check if the line contains both the job name and the publisher
+        if (line.find("Job name: " + nameToDelete) != string::npos && line.find("publish by: " + nameE) != string::npos) {
             found = true;
-            continue; // Skip this line, effectively deleting it
+            deleteMode = true;
+            continue;
         }
-        outputFile << line << endl;
+        // If in delete mode, check for empty line (indicating end of job details)
+        if (deleteMode && line.empty()) {
+            deleteMode = false;
+        }
+        // Write the line to the output file if not in delete mode
+        if (!deleteMode) {
+            outputFile << line << endl;
+        }
     }
 
     inputFile.close();
     outputFile.close();
 
     if (found) {
-        remove("job.txt");         // Remove the old file
-        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        remove("job.txt");                 // Remove the old file
+        rename("temp.txt", "job.txt");     // Rename temp file to original name
         cout << "Job '" << nameToDelete << "' deleted successfully.\n";
     } else {
         cout << "Job '" << nameToDelete << "' not found.\n";
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
-// Method to edit job from text file
+
 void editJob(const string &nameToEdit,const string &n_dateJ,const string &n_nameJ,const string &n_areaJ,int n_years_experienceJ,double n_salaryJ,const string &n_typeJ) {
     ifstream inputFile("job.txt");
     ofstream outputFile("temp.txt");
