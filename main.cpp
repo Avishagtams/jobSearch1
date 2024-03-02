@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <cstdio>
+#include <limits>
 using namespace std;
 void menuUpdate();
 void loginCandidate();
@@ -30,48 +31,48 @@ void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
 int main() {
+
    mainMenu();
 
     return 0;
 }//-----------------------------------------------------job search system
-void mainMenu(){
+void mainMenu() {
     int choice;
-    do {
+    cout << "Welcome to Job Search System" << endl;
+    cout << "1. Candidate Login" << endl;
+    cout << "2. Employer Login" << endl;
+    cout << "3. Register as Candidate" << endl;
+    cout << "4. Register as Employer" << endl;
+    cout << "5. Exit" << endl;
 
-        cout << "Welcome to Job Search System" << endl;
-        cout << "1. Candidate Login" << endl;
-        cout << "2. Employer Login" << endl;
-        cout << "3. Register as Candidate" << endl;
-        cout << "4. Register as Employer" << endl;
-        cout << "5. Exit" << endl;
-        cout << "Enter your choice: " << endl;
-        cin >> choice;
-
-        switch (choice) {
-            case 1:
-                loginCandidate();
-                break;
-            case 2:
-                loginEmployer();
-                break;
-            case 3:
-                registerCandidate();
-                break;
-            case 4:
-                registerEmployer();
-                break;
-            case 5:
-                cout << "Exiting program." << endl;
-                return;
-            default: {
-                cout << "Invalid choice. Please enter again!" << endl << endl;
-                mainMenu();
-            }
-
-
-        }
+    cout << "Enter your choice: "<<endl;
+    // Checking if the input is an integer
+    while (!(cin >> choice)) {
+        cout << "Invalid input. Please choose again: "<<endl;
+        cin.clear(); // Clearing the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
     }
-        while (choice<1&&choice>5);
+
+    switch (choice) {
+        case 1:
+            loginCandidate();
+            break;
+        case 2:
+            loginEmployer();
+            break;
+        case 3:
+            registerCandidate();
+            break;
+        case 4:
+            registerEmployer();
+            break;
+        case 5:
+            cout << "Exiting program." << endl;
+            return;
+        default:
+            cout << "Invalid choice. Please enter again!" << endl << endl;
+            mainMenu(); // Recursively calling mainMenu for re-entering choice
+    }
 }
 // Method to register a new employer
 void registerEmployer() {
@@ -246,7 +247,11 @@ void candidateMenu() {
     cout << "4. Edit Profile" << endl;
     cout << "5. Logout" << endl;
     cout << "Enter your choice: ";
-    cin >> choice;
+    while (!(cin >> choice)) {
+        cout << "Invalid input. Please choose again: "<<endl;
+        cin.clear(); // Clearing the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
+    }
 
     switch (choice) {
         case 1:
@@ -279,7 +284,6 @@ void employerMenu() {
     // Implement employer menu options as per requirements
     // You can add options like publishing, deleting, and updating jobs, viewing submissions, etc.
     int choice;
-
     cout << endl << "Welcome to Employer Menu!" << endl;
     cout << "Enter your choice: "<<endl;
     cout << "1. Publish a Job" << endl;
@@ -288,8 +292,12 @@ void employerMenu() {
     cout << "4. View Published Jobs" << endl;
     cout << "5. View Candidate Submissions for a Job" << endl;
     cout << "6. Logout" << endl;
+    while (!(cin >> choice)) {
+        cout << "Invalid input. Please choose again: "<<endl;
+        cin.clear(); // Clearing the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
+    }
 
-    cin >> choice;
 
     switch (choice) {
         case 1:
@@ -341,12 +349,15 @@ void menuUpdate(){
     string publisherName;
     cout << "Enter your name as publisher: "<<endl;
     cin >> publisherName;
-
     int choice;
     do {
         displayEditMenu();
         cout << "Enter your choice: "<<endl;
-        cin >> choice;
+        while (!(cin >> choice)) {
+            cout << "Invalid input. Please choose again: "<<endl;
+            cin.clear(); // Clearing the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
+        }
 
         switch (choice) {
             case 1:
@@ -373,7 +384,7 @@ void menuUpdate(){
             default:
                 cout << "Invalid choice. Please try again." << endl;
         }
-    } while (choice != 4);
+    } while (choice != 7);
 }
 //change name of job
 void editJobByName(const string& publisher) {
