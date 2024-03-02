@@ -1,14 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <cstring>
 #include <string>
 #include <cstdio>
-/*#include <poppler/cpp/poppler-document.h>
-#include <poppler/cpp/poppler-page.h>*/
 using namespace std;
 void menuUpdate();
-void readFile(const string& filename, vector<string>& data);
 void loginCandidate();
 void loginEmployer();
 void registerCandidate();
@@ -28,11 +24,15 @@ void displayEditMenu();
 void deleteJob();
 void editJobByName(const string& publisher);
 void editJobByArea(const string& publisher);
+void editJobByYears(const string& publisher);
+void editJobBySalary(const string& publisher);
+void editJobByType(const string& publisher);
+void editJobByDate(const string& publisher);
 void mainMenu();
 //void eraseJobFile();
 int main() {
    mainMenu();
-    //eraseJobFile();
+
     return 0;
 }//-----------------------------------------------------job search system
 void mainMenu(){
@@ -326,16 +326,18 @@ void employerMenu() {
     employerMenu();
 
 }
-
 //-----------------------------------------------------jobs
-//--------updateJob
+//-------------------------------->updateJob
 void displayEditMenu() {
     cout << "1. Edit job by name" << endl;
     cout << "2. Edit job by area" << endl;
-    cout << "3. Edit job by any text" << endl;
-    cout << "4. Exit" << endl;
+    cout << "3. Edit job by years of experience " << endl;
+    cout << "4. Edit job by salary" << endl;
+    cout << "5. Edit job by type" << endl;
+    cout << "6. Edit job by date" << endl;
+    cout << "7. Exit" << endl;
 }
-//
+//menu--edit
 void menuUpdate(){
     string publisherName;
     cout << "Enter your name as publisher: "<<endl;
@@ -352,13 +354,21 @@ void menuUpdate(){
                 editJobByName(publisherName);
                 break;
             case 2:
-                //editJobByArea(publisherName);
                 editJobByArea(publisherName);
                 break;
             case 3:
-                //editJobByAnyText(publisherName);
+                editJobByYears(publisherName);
                 break;
             case 4:
+                editJobBySalary(publisherName);
+                break;
+            case 5:
+                editJobByType(publisherName);
+                break;
+            case 6:
+                editJobByDate(publisherName);
+                break;
+            case 7:
                 cout << "Exiting..." << endl;
                 break;
             default:
@@ -366,9 +376,7 @@ void menuUpdate(){
         }
     } while (choice != 4);
 }
-
-
-//change name
+//change name of job
 void editJobByName(const string& publisher) {
     ifstream inputFile("job.txt");
     ofstream outputFile("temp.txt");
@@ -387,13 +395,14 @@ void editJobByName(const string& publisher) {
     bool found = false;
     while (getline(inputFile, line)) {
         // Check if the line contains the job name to edit
-        if (line.find("publish by: " + publisher) != string::npos && line.find("Job name: " + nameToEdit) != string::npos) {
+        if (line.find("job name: " + nameToEdit + " publish by: " + publisher)!=string::npos) {
             found = true;
             // Modify the line with new details
             outputFile << "job name: "<<nameNew<<" publish by: "<< publisher<<endl ;
         } else {
             outputFile << line << endl;
         }
+
     }
 
     inputFile.close();
@@ -408,17 +417,18 @@ void editJobByName(const string& publisher) {
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
+//change area of job
 void editJobByArea(const string& publisher) {
-    // TO DO: The code is incorrect
     string currentArea, newArea;
-    cout << "Enter the area of the job you want to update: ";
+    cout << "Enter the area of the job you want to update: "<<endl;
     cin >> currentArea;
-    cout << "Enter the new area: ";
+    cout << "Enter the new area: "<<endl;
     cin >> newArea;
+
 
     ifstream inputFile("job.txt");
     ofstream outputFile("temp.txt");
-    string line;
+    string line,line1;
 
     if (!inputFile.is_open()) {
         cerr << "Unable to open input file.\n";
@@ -426,12 +436,20 @@ void editJobByArea(const string& publisher) {
     }
 
     bool found = false;
-    while (getline(inputFile, line)) {
+    while (getline(inputFile, line) ) {
         // Check if the line contains the job name to edit
-        if (line.find("publisher by: " + publisher) != string::npos) {
-            found = true;
-            // Modify the line with new details
-            outputFile << " area: " << newArea << "." << endl;
+        if (line.find(" publish by: " + publisher) != string::npos ) {
+
+            if (getline(inputFile, line1) && line1.find("Area: " + currentArea) != string::npos) {
+                // Modify the line with new details
+                found = true;
+                outputFile << line << endl;
+                outputFile << "Area: " << newArea << endl;
+            } else{
+                outputFile << line << endl;
+                outputFile << line1 << endl;
+            }
+
         } else {
             outputFile << line << endl;
         }
@@ -449,9 +467,231 @@ void editJobByArea(const string& publisher) {
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
+//change years experience of job
+void editJobByYears(const string& publisher) {
+    string currentYears, newYears;
+    cout << "Enter the Years of the job you want to update: "<<endl;
+    cin >> currentYears;
+    cout << "Enter the new Years: "<<endl;
+    cin >> newYears;
 
 
+    ifstream inputFile("job.txt");
+    ofstream outputFile("temp.txt");
+    string line,line1;
 
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line) ) {
+        // Check if the line contains the job name to edit
+        if (line.find(" publish by: " + publisher) != string::npos ) {
+            getline(inputFile, line1);
+            outputFile << line << endl;
+            outputFile << line1 << endl;
+
+            if (getline(inputFile, line) && line.find("Years of experience required: " + currentYears) != string::npos) {
+                // Modify the line with new details
+                found = true;
+
+                outputFile << "Years of experience required: " << newYears << endl;
+            } else{
+                outputFile << line << endl;
+
+            }
+
+        } else {
+            outputFile << line << endl;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("job.txt");         // Remove the old file
+        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        cout << "Years '" << currentYears<< "' edited successfully.\n";
+    } else {
+        cout << "Years '" << currentYears<< "' not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+//change salary of job
+void editJobBySalary(const string& publisher) {
+    string currentSalary, newSalary;
+    cout << "Enter the salary of the job you want to update: "<<endl;
+    cin >> currentSalary;
+    cout << "Enter the new salary: "<<endl;
+    cin >> newSalary;
+
+
+    ifstream inputFile("job.txt");
+    ofstream outputFile("temp.txt");
+    string line,line1,line2;
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line) ) {
+        // Check if the line contains the job name to edit
+        if (line.find(" publish by: " + publisher) != string::npos ) {
+            getline(inputFile, line1);
+            getline(inputFile, line2);
+            outputFile << line << endl;
+            outputFile << line1 << endl;
+            outputFile << line2 << endl;
+
+            if (getline(inputFile, line) && line.find("The salary is: " + currentSalary) != string::npos) {
+                // Modify the line with new details
+                found = true;
+                outputFile << "The salary is: " << newSalary << endl;
+            } else{
+                outputFile << line << endl;
+
+            }
+
+        } else {
+            outputFile << line << endl;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("job.txt");         // Remove the old file
+        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        cout << "salary '" << currentSalary << "' edited successfully.\n";
+    } else {
+        cout << "salary '" << currentSalary << "' not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+//change type of job
+void editJobByType(const string& publisher) {
+    string currentType, newType;
+    cout << "Enter the type of the job you want to update: "<<endl;
+    cin >> currentType;
+    cout << "Enter the new type: "<<endl;
+    cin >> newType;
+
+
+    ifstream inputFile("job.txt");
+    ofstream outputFile("temp.txt");
+    string line,line1,line2,line3;
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line) ) {
+        // Check if the line contains the job name to edit
+        if (line.find(" publish by: " + publisher) != string::npos ) {
+            getline(inputFile, line1);
+            getline(inputFile, line2);
+            getline(inputFile, line3);
+            outputFile << line << endl;
+            outputFile << line1 << endl;
+            outputFile << line2 << endl;
+            outputFile << line3 << endl;
+
+
+            if (getline(inputFile, line) && line.find("Job's type: " + currentType) != string::npos) {
+                // Modify the line with new details
+                found = true;
+                outputFile << "Job's type: " << newType << endl;
+            } else{
+                outputFile << line << endl;
+
+            }
+
+        } else {
+            outputFile << line << endl;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("job.txt");         // Remove the old file
+        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        cout << "salary '" << currentType << "' edited successfully.\n";
+    } else {
+        cout << "salary '" << currentType << "' not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+//change type of date
+void editJobByDate(const string& publisher) {
+    string currentDate, newDate;
+    cout << "Enter the date of the job you want to update: "<<endl;
+    cin >> currentDate;
+    cout << "Enter the new date: "<<endl;
+    cin >> newDate;
+
+
+    ifstream inputFile("job.txt");
+    ofstream outputFile("temp.txt");
+    string line,line1,line2,line3,line4;
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line) ) {
+        // Check if the line contains the job name to edit
+        if (line.find(" publish by: " + publisher) != string::npos ) {
+            getline(inputFile, line1);
+            getline(inputFile, line2);
+            getline(inputFile, line3);
+            getline(inputFile, line4);
+
+            outputFile << line << endl;
+            outputFile << line1 << endl;
+            outputFile << line2 << endl;
+            outputFile << line3 << endl;
+            outputFile << line4 << endl;
+
+
+            if (getline(inputFile, line) && line.find("Published: " + currentDate) != string::npos) {
+                // Modify the line with new details
+                found = true;
+                outputFile << "Published: " << newDate << endl;
+            } else{
+                outputFile << line << endl;
+
+            }
+
+        } else {
+            outputFile << line << endl;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("job.txt");         // Remove the old file
+        rename("temp.txt", "job.txt");  // Rename temp file to original name
+        cout << "salary '" << currentDate << "' edited successfully.\n";
+    } else {
+        cout << "salary '" << currentDate << "' not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+// add job in text file
 void addJob(){
     string dateJ,nameJ,nameE,areaJ,typeJ;
     int years_experienceJ, salaryJ;
@@ -546,48 +786,6 @@ void deleteJob() {
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
-
-void editJob(const string &nameToEdit,const string &n_dateJ,const string &n_nameJ,const string &n_areaJ,int n_years_experienceJ,double n_salaryJ,const string &n_typeJ) {
-    ifstream inputFile("job.txt");
-    ofstream outputFile("temp.txt");
-    string line;
-
-    if (!inputFile.is_open()) {
-        cerr << "Unable to open input file.\n";
-        return;
-    }
-
-    bool found = false;
-    while (getline(inputFile, line)) {
-        // Check if the line contains the job name to edit
-        if (line.find("Name: " + nameToEdit) != string::npos) {
-            found = true;
-            // Modify the line with new details
-            outputFile <<"Published: " << n_dateJ <<endl;
-            outputFile <<"Job name: " << n_nameJ <<endl;
-            outputFile <<"Area: " << n_areaJ <<endl;
-            outputFile <<"Years of experience required: "<<n_years_experienceJ<<endl;
-            outputFile <<"The salary is: "<<n_salaryJ<<endl;
-            outputFile <<"Job's type: "<<n_typeJ<<endl; //if it is a full-time job or a part-time job
-            outputFile << endl;
-            outputFile.close();
-        } else {
-            outputFile << line << endl;
-        }
-    }
-
-    inputFile.close();
-    outputFile.close();
-
-    if (found) {
-        remove("job.txt");         // Remove the old file
-        rename("temp.txt", "job.txt");  // Rename temp file to original name
-        cout << "Job '" << nameToEdit << "' edited successfully.\n";
-    } else {
-        cout << "Job '" << nameToEdit << "' not found.\n";
-        remove("temp.txt"); // Remove the temp file if the job wasn't found
-    }
-}
 // Method to view all jobs from text file
 void viewPublishedJobs() {
     ifstream file("job.txt");
@@ -603,7 +801,7 @@ void viewPublishedJobs() {
         cerr << "Unable to open file.\n";
     }
 }
-//
+//---------------------------------->search
 void searchForJob(){
     int choice;
     cout<<"Choose according to which criteria you would like to search for jobs:"<<endl;
@@ -767,7 +965,8 @@ void searchByArea() {
     } else {
         cerr << "Unable to open file." << endl;
     }
-}// function to search jobs by a specific published years of experience
+}
+// function to search jobs by a specific published years of experience
 void searchByYears(){
         int years_experience;
         cout << "Enter the job's years experience required: " << endl;
@@ -868,7 +1067,8 @@ void searchBySalary() {
     } else {
         cerr << "Unable to open file." << endl;
     }
-}// function to search jobs by a specific type
+}
+// function to search jobs by a specific type
 void searchByType() {
     string type;
     cout << "Enter the job's type (full-time / part-time): " << endl;
@@ -917,13 +1117,3 @@ void searchByType() {
     }
 }
 
-/*void eraseJobFile() {
-    std::ofstream file("job.txt", std::ios::trunc);
-
-    if (file.is_open()) {
-        std::cout << "Job file erased successfully.\n";
-        file.close();
-    } else {
-        std::cerr << "Unable to open file for erasing.\n";
-    }
-}*/
