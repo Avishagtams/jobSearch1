@@ -29,7 +29,6 @@ void editJobBySalary(const string& publisher);
 void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
-//void eraseJobFile();
 int main() {
    mainMenu();
 
