@@ -4,11 +4,12 @@
 #include <string>
 #include <cstdio>
 #include <limits>
-#include <sstream>
 #include <ctime>
+#include <cstring>
+
 using namespace std;
 
-void menuUpdate();
+void menuUpdateJobs();
 void loginCandidate();
 void loginEmployer();
 void registerCandidate();
@@ -325,7 +326,7 @@ void employerMenu() {
             break;
         case 3:
             // Implement update job functionality
-            menuUpdate();
+            menuUpdateJobs();
             break;
         case 4:
             // Implement view published jobs functionality
@@ -360,7 +361,7 @@ void displayEditMenu() {
     cout << "7. Exit" << endl;
 }
 //menu--edit
-void menuUpdate(){
+void menuUpdateJobs(){
     string publisherName;
     cout << "Enter your name as publisher: "<<endl;
     cin >> publisherName;
@@ -420,10 +421,10 @@ void editJobByName(const string& publisher) {
     bool found = false;
     while (getline(inputFile, line)) {
         // Check if the line contains the job name to edit
-        if (line.find("job name: " + nameToEdit + " publish by: " + publisher)!=string::npos) {
+        if (line.find("Job name: " + nameToEdit + " publish by: " + publisher)!=string::npos) {
             found = true;
             // Modify the line with new details
-            outputFile << "job name: "<<nameNew<<" publish by: "<< publisher<<endl ;
+            outputFile << "Job name: "<<nameNew<<" publish by: "<< publisher<<endl ;
         } else {
             outputFile << line << endl;
         }
@@ -486,9 +487,9 @@ void editJobByArea(const string& publisher) {
     if (found) {
         remove("job.txt");         // Remove the old file
         rename("temp.txt", "job.txt");  // Rename temp file to original name
-        cout << "Job '" << currentArea<< "' edited successfully.\n";
+        cout << "Area '" << currentArea<< "' edited successfully.\n";
     } else {
-        cout << "Job '" << currentArea << "' not found.\n";
+        cout << "Area '" << currentArea << "' not found.\n";
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
@@ -539,9 +540,9 @@ void editJobByYears(const string& publisher) {
     if (found) {
         remove("job.txt");         // Remove the old file
         rename("temp.txt", "job.txt");  // Rename temp file to original name
-        cout << "Years '" << currentYears<< "' edited successfully.\n";
+        cout << "Years of experience '" << currentYears<< "' edited successfully.\n";
     } else {
-        cout << "Years '" << currentYears<< "' not found.\n";
+        cout << "Years of experience '" << currentYears<< "' not found.\n";
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
@@ -650,9 +651,9 @@ void editJobByType(const string& publisher) {
     if (found) {
         remove("job.txt");         // Remove the old file
         rename("temp.txt", "job.txt");  // Rename temp file to original name
-        cout << "salary '" << currentType << "' edited successfully.\n";
+        cout << "Job's type:" << currentType << " edited successfully.\n";
     } else {
-        cout << "salary '" << currentType << "' not found.\n";
+        cout << "Job's type:" << currentType << " not found.\n";
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
@@ -710,9 +711,9 @@ void editJobByDate(const string& publisher) {
     if (found) {
         remove("job.txt");         // Remove the old file
         rename("temp.txt", "job.txt");  // Rename temp file to original name
-        cout << "salary '" << currentDate << "' edited successfully.\n";
+        cout << "date of the job: " << currentDate << " edited successfully.\n";
     } else {
-        cout << "salary '" << currentDate << "' not found.\n";
+        cout << "date of the job: " << currentDate << " not found.\n";
         remove("temp.txt"); // Remove the temp file if the job wasn't found
     }
 }
@@ -725,12 +726,6 @@ void addJob(){
     cout<<"Enter the your name"<<endl;
     cin.ignore();
     getline(cin,nameE);
-
-//    cout<<"Enter published date"<<endl;
-//    cin.ignore();
-//    getline(cin,dateJ);
-
-
 
     cout<<"Enter the years of experience required"<<endl;
     cin>>years_experienceJ;
