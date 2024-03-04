@@ -6,9 +6,12 @@
 #include <limits>
 #include <ctime>
 #include <cstring>
+#include <algorithm>
 
 using namespace std;
-
+string candidateName, candidateID, candidatePassword;
+string employerName, employerID, employerPassword;
+void viewNewJobs();//todo: check why dd/mm/yy
 void menuUpdateJobs();
 void loginCandidate();
 void loginEmployer();
@@ -35,15 +38,6 @@ void editJobBySalary(const string& publisher);
 void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
-
-string candidateName, candidateID, candidatePassword;
-
-// File paths
-const string candidatesFile = "candidate.txt";
-const string employersFile = "employers.txt";
-const string jobsFile = "job.txt";
-const string submissionsFile = "submissions.txt";
-
 
 int main() {
 
@@ -190,20 +184,21 @@ void readFile(const string& filename, vector<string>& data) {
 }
 //if employer in text
 void loginEmployer() {
-    string i, p;
+    cout << "Enter your name: "<<endl;
+    cin >> employerName;
     cout << "Enter id: "<<endl;
-    cin >> i;
+    cin >> employerID;
     cout << "Enter password: "<<endl;
-    cin >> p;
+    cin >> employerPassword;
 
     ifstream file("employers.txt");
     if (file.is_open()) {
         string line;
         bool found = false;
         while (getline(file, line)) {
-            if (line.find("ID: " + i) != string::npos) {
+            if (line.find("ID: " + employerID) != string::npos) {
                 getline(file, line);
-                if (line.find("Password: " + p) != string::npos) {
+                if (line.find("Password: " + employerPassword) != string::npos) {
                     found = true;
                     break;
                 }
@@ -258,40 +253,105 @@ void loginCandidate() {
         cerr << "Unable to open file for candidate login.\n";
     }
 }
-//after candidate log in
+void viewNewJobs() {
+    string desiredJob;
+    int candidateExperience;
+    cout << endl;
+    cout << "Enter the desired job: " << endl;
+    cin >> desiredJob;
+    cout << "Enter your years of experience: " << endl;
+    cin >> candidateExperience;
+    cout << endl;
+
+    ifstream file("job.txt");
+    string line;
+    vector<string> matchingJobs;
+
+    while (getline(file, line)) {
+        if (line.find("Job name: " + desiredJob) != string::npos) {
+            string jobInfo = line + "\n";
+            for (int i = 0; i < 5; ++i) {
+                getline(file, line);
+                jobInfo += line + "\n";
+            }
+            matchingJobs.push_back(jobInfo);
+        }
+    }
+
+    file.close();
+    if (!matchingJobs.empty()) {
+        // Sorting the matching jobs by publish date in ascending order
+        sort(matchingJobs.begin(), matchingJobs.end(), [](const string &a, const string &b) {
+            size_t posA = a.find("Published: ");
+            size_t posB = b.find("Published: ");
+            string dateA = a.substr(posA + 11);
+            string dateB = b.substr(posB + 11);
+            int dayA, monthA, yearA;
+            int dayB, monthB, yearB;
+            sscanf(dateA.c_str(), "%d/%d/%d", &dayA, &monthA, &yearA);
+            sscanf(dateB.c_str(), "%d/%d/%d", &dayB, &monthB, &yearB);
+
+            // Converting two-digit years to four digits (assuming 20th century)
+            if (yearA < 100) yearA += 2000;
+            if (yearB < 100) yearB += 2000;
+
+            if (yearA != yearB) {
+                return yearA < yearB;
+            } else if (monthA != monthB) {
+                return monthA < monthB;
+            } else if (dayA != dayB) {
+                return dayA < dayB;
+            } else {
+                return false; // If the dates are the same, keep the original order.
+            }
+        });
+
+        // Printing the matching jobs
+        for (const auto &job : matchingJobs) {
+            size_t pos = job.find("Years of experience required: ");
+            int requiredExperience = stoi(job.substr(pos + 30));
+            if (candidateExperience >= requiredExperience) {
+                cout << job << endl;
+            }
+        }
+    } else {
+        cout << "No matching jobs found." << endl;
+    }
+}
 void candidateMenu() {
     // Implement candidate menu options as per requirements
     // You can add options like searching for jobs, submitting resumes, etc.
     int choice;
     cout << endl << "Welcome to Candidate Menu!" << endl;
     cout << "Enter your choice: "<<endl;
-    cout << "1. Search for Jobs" << endl;
-    cout << "2. Submit Resume" << endl;
-    cout << "3. View Submission History" << endl;
-    cout << "4. Edit Profile" << endl;
-    cout << "5. Logout" << endl;
-    cout << "Enter your choice: " <<endl;
-    while (!(cin >> choice)) {
-        cout << "Invalid input. Please choose again: "<<endl;
-        cin.clear(); // Clearing the error flag
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
-    }
+    cout << "1. Look for new Jobs" << endl;
+    cout << "2. Search for Jobs" << endl;
+    cout << "3. Submit Resume" << endl;
+    cout << "4. View Submission History" << endl;
+    cout << "5. Edit Profile" << endl;
+    cout << "6. Logout" << endl;
+    cout << "Enter your choice: ";
+    cin >> choice;
 
     switch (choice) {
         case 1:
-            // Implement job search functionality
-            searchForJob();
+            // Search for new jobs by field and years of experience
+            viewNewJobs();
             break;
         case 2:
-            // Implement resume submission functionality
+            // Implement job search functionality
+            searchForJob();//TODO fix it
             break;
         case 3:
-            // Implement view submission history functionality
+            // Implement resume submission functionality
             break;
         case 4:
-            // Implement edit profile functionality
+            // Implement view submission history functionality
             break;
         case 5:
+            // Implement edit profile functionality
+            break;
+        case 6:
             cout << "Logging out..." << endl;
             // Return to main menu
             return;
@@ -313,7 +373,7 @@ void employerMenu() {
     cout << "1. Publish a Job" << endl;
     cout << "2. Delete a Job" << endl;
     cout << "3. Update a Job" << endl;
-    cout << "4. View Published Jobs" << endl;
+    cout << "4. View relevant jobs that I posted" << endl;
     cout << "5. View Candidate Submissions for a Job" << endl;
     cout << "6. Logout" << endl;
     while (!(cin >> choice)) {
@@ -344,6 +404,7 @@ void employerMenu() {
             // Implement view candidate submissions functionality
 
             break;
+
         case 6:
             cout << "Logging out..." << endl;
             // Return to main menu
@@ -370,9 +431,6 @@ void displayEditMenu() {
 }
 //menu--edit
 void menuUpdateJobs(){
-    string publisherName;
-    cout << "Enter your name as publisher: "<<endl;
-    cin >> publisherName;
     int choice;
     do {
         displayEditMenu();
@@ -385,22 +443,22 @@ void menuUpdateJobs(){
 
         switch (choice) {
             case 1:
-                editJobByName(publisherName);
+                editJobByName(employerName);
                 break;
             case 2:
-                editJobByArea(publisherName);
+                editJobByArea(employerName);
                 break;
             case 3:
-                editJobByYears(publisherName);
+                editJobByYears(employerName);
                 break;
             case 4:
-                editJobBySalary(publisherName);
+                editJobBySalary(employerName);
                 break;
             case 5:
-                editJobByType(publisherName);
+                editJobByType(employerName);
                 break;
             case 6:
-                editJobByDate(publisherName);
+                editJobByDate(employerName);
                 break;
             case 7:
                 cout << "Exiting..." << endl;
@@ -823,14 +881,26 @@ void viewPublishedJobs() {
     string line;
 
     if (file.is_open()) {
-        cout << "List of Published Jobs:\n";
+        bool foundPublisher = false;
         while (getline(file, line)) {
-            cout << line << endl;
+            if (line.find("publish by: " + employerName) != string::npos) {
+                foundPublisher = true;
+                cout << line << endl;  // Print the line with publisher name
+                for (int i = 0; i < 5; ++i) {
+                    getline(file, line);  // Skip the next 5 lines
+                    cout << line << endl;  // Print the job details
+                }
+                cout<<endl;
+            }
+        }
+        if (!foundPublisher) {
+            cout << "No published jobs found for publisher: " << employerName << endl;
         }
         file.close();
     } else {
         cerr << "Unable to open file.\n";
     }
+
 }
 //---------------------------------->search
 void searchForJob(){
@@ -869,7 +939,7 @@ void searchForJob(){
 // function to search jobs by a specific published date
 void searchByDate() {
     string date;
-    cout << "Enter the job's date you want in format dd/mm/yyyy: " << endl;
+    cout << "Enter the job's date you want in format d/m/yy: " << endl;
     cin.ignore(); // Clear input buffer
     getline(cin, date);
 
@@ -1165,7 +1235,7 @@ void submitCandidacy (){
         ofstream file("submissions.txt", ios::app);
         if (file.is_open()) {
             file << "Candidate Name: " << candidateName << endl;
-         //   file << line << endl; Job details //todo: same with job details. name, publisher
+            //   file << line << endl; Job details //todo: same with job details. name, publisher
             file << endl;
             file.close();
             cout << "Job application submitted successfully!" << endl<<endl;
