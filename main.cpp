@@ -9,8 +9,10 @@
 #include <algorithm>
 
 using namespace std;
+
 string candidateName, candidateID, candidatePassword;
 string employerName, employerID, employerPassword;
+
 void viewNewJobs();//todo: check why dd/mm/yy
 void menuUpdateJobs();
 void loginCandidate();
@@ -28,7 +30,7 @@ void searchByYears();
 void searchBySalary();
 void searchByType();
 void viewPublishedJobs();
-void submitCandidacy (); //todo: in process...
+void submitCandidacy (string jobName); //todo: in process...
 void displayEditMenu();
 void deleteJob();
 void editJobByName(const string& publisher);
@@ -57,13 +59,15 @@ void mainMenu() {
     cout << "4. Register as Employer" << endl;
     cout << "5. Exit" << endl;
 
-    cout << "Enter your choice: "<<endl;
+    cout << "Enter your choice: ";
     // Checking if the input is an integer
     while (!(cin >> choice)) {
         cout << "Invalid input. Please choose again: "<<endl;
         cin.clear(); // Clearing the error flag
         cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
     }
+
+    cout << endl;
 
     switch (choice) {
         case 1:
@@ -244,7 +248,9 @@ void loginCandidate() {
         }
         file.close();
         if (found) {
-            cout << "Login candidate " << candidateName << " successful.\n";
+            cout << "Login candidate successful.\n\n";
+            cout << "Hi " << candidateName << endl;
+            cout << "Welcome to Candidate Menu!" << endl;
             candidateMenu();
         } else {
             cout << "Invalid id or password. Please try again!\n"; //todo: fix return to menu - exiting program
@@ -322,8 +328,7 @@ void candidateMenu() {
     // Implement candidate menu options as per requirements
     // You can add options like searching for jobs, submitting resumes, etc.
     int choice;
-    cout << endl << "Welcome to Candidate Menu!" << endl;
-    cout << "Enter your choice: "<<endl;
+    cout << "What do you want to do today?" << endl;
     cout << "1. Look for new Jobs" << endl;
     cout << "2. Search for Jobs" << endl;
     cout << "3. Submit Resume" << endl;
@@ -905,6 +910,7 @@ void viewPublishedJobs() {
 //---------------------------------->search
 void searchForJob(){
     int choice;
+    cout<<endl;
     cout<<"Choose according to which criteria you would like to search for jobs:"<<endl;
     cout<<"1. Published date."<<endl;
     cout<<"2. Name."<<endl;
@@ -912,6 +918,7 @@ void searchForJob(){
     cout<<"4. Years of experience."<<endl;
     cout<<"5. Salary range."<<endl;
     cout<<"6. Type."<<endl; //full-time or part-time
+    cout<<"Enter your choice: ";
     cin>>choice;
     while(choice < 1 || choice > 6){
         cout<<"You entered an incorrect number, please try again"<<endl;
@@ -967,7 +974,7 @@ void searchByDate() {
                 found = true; // Job found
                 cout << endl; // Add a blank line after printing the job block
                 // No break here, so it continues searching
-                submitCandidacy ();
+                //todo: add here submit func / tamar
             }
 
             // Store previous 5 lines
@@ -990,10 +997,10 @@ void searchByDate() {
 // function to search jobs by a specific published name
 void searchByName() {
     string name;
-    cout << "Enter the job's name you want: " << endl;
+    cout << endl << "Enter the job's name you want: " << endl;
     cin.ignore(); // Clear input buffer
     getline(cin, name);
-
+    cout << endl;
     ifstream file("job.txt");
 
     if (file.is_open()) {
@@ -1004,14 +1011,13 @@ void searchByName() {
             if (line.find("Job name: " + name) != string::npos) {
                 // Print the entire job information block
                 cout << line << endl;
-
                 while (getline(file, line) && !line.empty()) {
                     cout << line << endl;
                 }
 
                 cout<<endl;
                 found = true; // Job found
-
+                submitCandidacy (name);
                 // No break here, so it continues searching
             }
 
@@ -1020,7 +1026,7 @@ void searchByName() {
         file.close();
 
         if (!found) {
-            cout << "Job not found." << endl;
+            cout << "Job not found." << endl<<endl;
         }
     } else {
         cerr << "Unable to open file." << endl;
@@ -1222,25 +1228,41 @@ void searchByType() {
     }
 }
 
-void submitCandidacy (){
+void submitCandidacy (string jobName){
     int applyChoice;
     cout << "Do you want to apply for this job?" << endl;
     cout << "1. Apply" << endl;
     cout << "0. Continue to the next offer" << endl;
     cout << "Enter your choice: ";
     cin >> applyChoice;
+    cout << endl;
 
     if (applyChoice == 1) {
         // Save the job in submissions.txt with candidate's details
-        ofstream file("submissions.txt", ios::app);
-        if (file.is_open()) {
-            file << "Candidate Name: " << candidateName << endl;
-            //   file << line << endl; Job details //todo: same with job details. name, publisher
-            file << endl;
-            file.close();
+        ofstream submissionsFile("submissions.txt", ios::app);
+        ifstream jobFile("job.txt", ios::app);
+        if (submissionsFile.is_open() && jobFile.is_open()) {
+            submissionsFile << "Apply by: " << candidateName << endl;
+            submissionsFile <<"----------------------------------------------------------------------------------------"<<endl;
+            string line;
+            while (getline(jobFile, line)) {
+                if (line.find("Job name: " + jobName) != string::npos) {
+                    submissionsFile << line << endl;
+
+                    // Print the entire job information block
+                    while (getline(jobFile, line) && !line.empty()) {
+                        submissionsFile << line << endl;
+                    }
+                    submissionsFile << endl;
+                }
+            }
+
+            submissionsFile.close();
+            jobFile.close();
+
             cout << "Job application submitted successfully!" << endl<<endl;
         } else {
-            cerr << "Unable to open submissions file." << endl;
+            cerr << "Unable to open files." << endl;
         }
     }
 
