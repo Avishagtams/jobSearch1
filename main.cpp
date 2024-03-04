@@ -36,6 +36,8 @@ void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
 
+string candidateName, candidateID, candidatePassword;
+
 // File paths
 const string candidatesFile = "candidate.txt";
 const string employersFile = "employers.txt";
@@ -220,28 +222,34 @@ void loginEmployer() {
 }
 //if candidate in text
 void loginCandidate() {
-    string i, p;
+
     cout << "Enter id: "<<endl;
-    cin >> i;
+    cin >> candidateID;
     cout << "Enter password: "<<endl;
-    cin >> p;
+    cin >> candidatePassword;
+    cout << "Enter name: "<<endl;
+    cin >> candidateName;
+
 
     ifstream file("candidate.txt");
     if (file.is_open()) {
         string line;
         bool found = false;
         while (getline(file, line)) {
-            if (line.find("ID: " + i) != string::npos) {
+            if (line.find("ID: " + candidateID) != string::npos) {
                 getline(file, line);
-                if (line.find("Password: " + p) != string::npos) {
-                    found = true;
-                    break;
+                if (line.find("Password: " + candidatePassword) != string::npos) {
+                    getline(file, line);
+                    if (line.find("Name: " + candidateName) != string::npos) {
+                        found = true;
+                        break;
+                    }
                 }
             }
         }
         file.close();
         if (found) {
-            cout << "Login candidate successful.\n";
+            cout << "Login candidate " << candidateName << " successful.\n";
             candidateMenu();
         } else {
             cout << "Invalid id or password. Please try again!\n"; //todo: fix return to menu - exiting program
@@ -262,7 +270,7 @@ void candidateMenu() {
     cout << "3. View Submission History" << endl;
     cout << "4. Edit Profile" << endl;
     cout << "5. Logout" << endl;
-    cout << "Enter your choice: ";
+    cout << "Enter your choice: " <<endl;
     while (!(cin >> choice)) {
         cout << "Invalid input. Please choose again: "<<endl;
         cin.clear(); // Clearing the error flag
@@ -272,7 +280,7 @@ void candidateMenu() {
     switch (choice) {
         case 1:
             // Implement job search functionality
-            searchForJob();//TODO fix it
+            searchForJob();
             break;
         case 2:
             // Implement resume submission functionality
@@ -1156,9 +1164,8 @@ void submitCandidacy (){
         // Save the job in submissions.txt with candidate's details
         ofstream file("submissions.txt", ios::app);
         if (file.is_open()) {
-            file << "Candidate Name: " << /*candidateName <<*/ endl; //todo: read from candidates file his name to here
-            //todo: maybe we have to get the parameters to local variance?
-            //file << line << endl; // Job details //todo: same with job details. name, publisher
+            file << "Candidate Name: " << candidateName << endl;
+         //   file << line << endl; Job details //todo: same with job details. name, publisher
             file << endl;
             file.close();
             cout << "Job application submitted successfully!" << endl<<endl;
