@@ -49,6 +49,9 @@ void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
 void submitResume();
+void displayAllJobs();
+void markJobAsLiked();
+void displayLikedJobs();
 
 int main() {
 
@@ -338,35 +341,41 @@ void candidateMenu() {
     // You can add options like searching for jobs, submitting resumes, etc.
     int choice;
     cout << "What do you want to do today?" << endl;
-    cout << "1. Look for new Jobs" << endl;
-    cout << "2. Search for Jobs" << endl;
-    cout << "3. Submit Resume" << endl;
-    cout << "4. View Submission History" << endl;
-    cout << "5. Edit Profile" << endl;
-    cout << "6. Logout" << endl;
+    cout<<  "1. View all jobs" <<endl;
+    cout << "2. Look for new Jobs" << endl;
+    cout << "3. Search for Jobs" << endl;
+    cout << "4. Submit Resume" << endl;
+    cout << "5. View Submission History" << endl;
+    cout << "6. View liked jobs "<<endl;
+    cout << "7. Edit Profile" << endl;
+    cout << "8. Logout" << endl;
     cout << "Enter your choice: "<<endl;
     cin >> choice;
 
     switch (choice) {
         case 1:
+            displayAllJobs();
+            break;
+        case 2:
             // Search for new jobs by field and years of experience
             viewNewJobs();
             break;
-        case 2:
-            // Implement job search functionality
-            searchForJob();//TODO fix it
-            break;
         case 3:
-            // Implement resume submission functionality
-            submitResume();
+            searchForJob();
             break;
         case 4:
-            // Implement view submission history functionality
+            submitResume();
             break;
         case 5:
-            menuEditCandidate();
+            // Implement view submission history functionality
             break;
         case 6:
+            displayLikedJobs();
+            break;
+        case 7:
+            menuEditCandidate();
+            break;
+        case 8:
             cout << "Logging out..." << endl;
             // Return to main menu
             return;
@@ -1087,6 +1096,7 @@ void editJobByDate(const string& publisher) {
 }
 // add job in text file
 void addJob(){
+    static int jobCounter = 1;
     time_t now = time(0);
     tm *ltm = localtime(&now);
     string nameJ,areaJ,typeJ;
@@ -1117,9 +1127,11 @@ void addJob(){
         file <<"The salary is: "<<salaryJ<<endl;
         file <<"Job's type: "<<typeJ<<endl; //if it is a full-time job or a part-time job
         file <<"Published: " << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year <<endl;
+        file << "Job number: " << jobCounter << endl;  // Add job number in the last line
         file << endl;
         file.close();
         cout << "add job successful.\n";
+        jobCounter++;
     } else {
         cerr << "Unable to add job.\n";
     }
@@ -1618,5 +1630,113 @@ void submitResume() {
         cout << "Resume link added successfully." << endl;
     } else {
         cout << "Candidate not found. No changes were made." << endl;
+    }
+}
+
+void displayAllJobs() {
+    std::ifstream inFile("job.txt");
+    if (inFile.is_open()) {
+        std::string line;
+        cout << endl;
+
+        while (std::getline(inFile, line)) {
+            if (line.empty()) {
+                // Empty line encountered, print a separator
+                std::cout << "------------------------\n";
+            } else {
+                std::cout << line << "\n";
+            }
+        }
+
+        inFile.close();
+    } else {
+        std::cerr << "Error opening job file: " << inFile << "\n";
+    }
+    char choice;
+    cout << "Would you like to like any job? (Y/N) " << endl;
+    cin >> choice;
+    if (choice == 'Y') {
+        markJobAsLiked();
+    } else if (choice == 'N') {
+        return;
+    }
+}
+
+void markJobAsLiked() {
+    string candidate_name;
+    int job_number;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Enter your name: ";
+    getline(std::cin, candidate_name);
+
+    cout << "Enter the job's number you liked: ";
+    cin >> job_number;
+
+    ifstream jobFile("job.txt");
+    ofstream likedJobsFile(candidate_name + "_liked_jobs.txt", ios::app);
+
+    if (jobFile.is_open() && likedJobsFile.is_open()) {
+        string line;
+        int currentIndex = 0;
+
+        // Read until the specified job number
+        while (currentIndex < job_number - 1 && getline(jobFile, line)) {
+            if (line.find("Job number:") != string::npos) {
+                ++currentIndex;
+            }
+        }
+
+        // Check if we found the desired job number
+        if (currentIndex == job_number - 1) {
+            // Write and print each line of the job information
+            do {
+                likedJobsFile << line << "\n"; // Write each line to the likedJobsFile
+
+                // Read the next line
+                if (getline(jobFile, line)) {
+                    // Check if the next line is the start of a new job
+                    if (line.find("Job number:") != string::npos) {
+                        likedJobsFile << line << "\n"; // Write the job number to likedJobsFile
+                        break; // Break the loop if a new job starts
+                    }
+                } else {
+                    break; // Break if there are no more lines to read
+                }
+            } while (true);
+
+            cout << "Job marked as liked.\n";
+        } else {
+            cout << "Job number not found.\n";
+        }
+
+        jobFile.close();
+        likedJobsFile.close();
+    } else {
+        cerr << "Error opening files for copying liked jobs.\n";
+    }
+}
+
+
+
+void displayLikedJobs() {
+    string candidate_name;
+    cout<<"Enter your name"<<endl;
+    cin.ignore();
+    getline(cin,candidate_name);
+    cout<<"------------------------------------"<<endl;
+
+    std::ifstream inFile(candidate_name + "_liked_jobs.txt");
+    if (inFile.is_open()) {
+        std::string line;
+
+        while (std::getline(inFile, line)) {
+            std::cout << line << "\n";
+        }
+        cout<<"------------------------------------"<<endl;
+
+        inFile.close();
+    } else {
+        std::cerr << "Error opening file for displaying liked jobs.\n";
     }
 }
