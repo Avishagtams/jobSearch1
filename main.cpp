@@ -38,6 +38,7 @@ void searchBySalary();
 void searchByType();
 void viewPublishedJobs();
 void submitCandidacy (string jobName);
+void ViewOfCandidateSubmissions();
 void displayEditMenu();
 void deleteJob();
 void editJobByName(const string& publisher);
@@ -404,18 +405,15 @@ void employerMenu() {
         case 2:
             deleteJob();
 
-            // Implement delete job functionality
             break;
         case 3:
-            // Implement update job functionality
             menuUpdateJobs();
             break;
         case 4:
-            // Implement view published jobs functionality
             viewPublishedJobs();
             break;
         case 5:
-            // Implement view candidate submissions functionality
+            ViewOfCandidateSubmissions();
 
             break;
 
@@ -1091,11 +1089,8 @@ void editJobByDate(const string& publisher) {
 void addJob(){
     time_t now = time(0);
     tm *ltm = localtime(&now);
-    string nameJ,nameE,areaJ,typeJ;
+    string nameJ,areaJ,typeJ;
     int years_experienceJ, salaryJ;
-    cout<<"Enter the your name"<<endl;
-    cin.ignore();
-    getline(cin,nameE);
 
     cout<<"Enter the years of experience required"<<endl;
     cin>>years_experienceJ;
@@ -1116,7 +1111,7 @@ void addJob(){
 
     ofstream file("job.txt", ios::app);
     if (file.is_open()) {
-        file <<"Job name: " << nameJ <<" publish by: "<<nameE<<endl;
+        file <<"Job name: " << nameJ <<" publish by: "<<employerName<<endl;
         file <<"Area: " << areaJ <<endl;
         file <<"Years of experience required: "<<years_experienceJ<<endl;
         file <<"The salary is: "<<salaryJ<<endl;
@@ -1205,6 +1200,37 @@ void viewPublishedJobs() {
         cerr << "Unable to open file.\n";
     }
 
+}
+//view all job that employer publish
+void ViewOfCandidateSubmissions() {
+    std::ifstream file("submissions.txt");
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return;
+    }
+
+    std::string line;
+    bool foundPublisher = false;
+    std::string prevLine;
+    while (std::getline(file, line)) {
+        if (line.find("publish by: " + employerName) != std::string::npos) {
+            // Print the line before job details
+            if (!prevLine.empty()) {
+                std::cout << prevLine << std::endl;
+            }
+            foundPublisher = true;
+            // Print the line with publisher name
+            std::cout << line << std::endl;
+            // Print the job details
+            for (int i = 0; i < 6; ++i) {
+                std::getline(file, line);
+                std::cout << line << std::endl;
+            }
+            // Empty line after each job
+            std::cout << std::endl;
+        }
+        prevLine = line;
+    }
 }
 //---------------------------------->search
 void searchForJob(){
@@ -1557,7 +1583,7 @@ void submitCandidacy (string jobDetails){
         }
     }
 }
-
+//link to pdf
 void submitResume() {
     string id, resumeLink;
     cout << "Enter the candidate's ID: ";
