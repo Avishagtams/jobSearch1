@@ -7,6 +7,7 @@
 #include <ctime>
 #include <cstring>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -40,6 +41,7 @@ void editJobBySalary(const string& publisher);
 void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
+void submitResume();
 
 int main() {
 
@@ -349,6 +351,7 @@ void candidateMenu() {
             break;
         case 3:
             // Implement resume submission functionality
+            submitResume();
             break;
         case 4:
             // Implement view submission history functionality
@@ -1258,5 +1261,42 @@ void submitCandidacy (string jobDetails){
         } else {
             cerr << "Unable to open files." << endl;
         }
+    }
+}
+
+void submitResume() {
+    string id, resumeLink;
+    cout << "Enter the candidate's ID: ";
+    cin.ignore();
+    getline(cin, id);
+    cout << "Enter the candidate's resume link: ";
+    getline(cin, resumeLink);
+
+    // Open the file in read mode to find the candidate
+    ifstream inFile("candidate.txt");
+    stringstream buffer;
+    buffer << inFile.rdbuf();
+    string fileContent = buffer.str();
+    inFile.close();
+
+    size_t foundIndex = fileContent.find(id);
+
+    // If the candidate is found, add the resume link to the candidate's information
+    if (foundIndex != string::npos) {
+        size_t colonIndex = fileContent.find(':', foundIndex);
+        size_t lineEndIndex = fileContent.find('\n', colonIndex);
+
+        // Construct the new line with the resume link
+        string newLine = "Resume Link: " + resumeLink + "\n";
+        fileContent.insert(lineEndIndex + 1, newLine);
+
+        // Open the file in write mode to update the information
+        ofstream outFile("candidate.txt");
+        outFile << fileContent;
+        outFile.close();
+
+        cout << "Resume link added successfully." << endl;
+    } else {
+        cout << "Candidate not found. No changes were made." << endl;
     }
 }
