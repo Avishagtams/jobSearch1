@@ -30,7 +30,7 @@ void searchByYears();
 void searchBySalary();
 void searchByType();
 void viewPublishedJobs();
-void submitCandidacy (string jobName); //todo: in process...
+void submitCandidacy (string jobName);
 void displayEditMenu();
 void deleteJob();
 void editJobByName(const string& publisher);
@@ -996,7 +996,7 @@ void searchByDate() {
 
 // function to search jobs by a specific published name
 void searchByName() {
-    string name;
+    string name, jobDetails;
     cout << endl << "Enter the job's name you want: " << endl;
     cin.ignore(); // Clear input buffer
     getline(cin, name);
@@ -1011,13 +1011,15 @@ void searchByName() {
             if (line.find("Job name: " + name) != string::npos) {
                 // Print the entire job information block
                 cout << line << endl;
+                string jobDetails = line + "\n";
                 while (getline(file, line) && !line.empty()) {
                     cout << line << endl;
+                    jobDetails += line + "\n";
                 }
 
                 cout<<endl;
                 found = true; // Job found
-                submitCandidacy (name);
+                submitCandidacy (jobDetails);
                 // No break here, so it continues searching
             }
 
@@ -1228,8 +1230,11 @@ void searchByType() {
     }
 }
 
-void submitCandidacy (string jobName){
+//A function that allows submitting a candidacy request for a certain position
+void submitCandidacy (string jobDetails){
     int applyChoice;
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
     cout << "Do you want to apply for this job?" << endl;
     cout << "1. Apply" << endl;
     cout << "0. Continue to the next offer" << endl;
@@ -1240,31 +1245,18 @@ void submitCandidacy (string jobName){
     if (applyChoice == 1) {
         // Save the job in submissions.txt with candidate's details
         ofstream submissionsFile("submissions.txt", ios::app);
-        ifstream jobFile("job.txt", ios::app);
-        if (submissionsFile.is_open() && jobFile.is_open()) {
-            submissionsFile << "Apply by: " << candidateName << endl;
-            submissionsFile <<"----------------------------------------------------------------------------------------"<<endl;
-            string line;
-            while (getline(jobFile, line)) {
-                if (line.find("Job name: " + jobName) != string::npos) {
-                    submissionsFile << line << endl;
+        if (submissionsFile.is_open() ) {
+            submissionsFile << "Submitted by: " << candidateName << " .  on date: "
+            <<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year <<  endl;
 
-                    // Print the entire job information block
-                    while (getline(jobFile, line) && !line.empty()) {
-                        submissionsFile << line << endl;
-                    }
-                    submissionsFile << endl;
-                }
-            }
+            submissionsFile << jobDetails << endl;
+            submissionsFile << endl;
 
             submissionsFile.close();
-            jobFile.close();
 
             cout << "Job application submitted successfully!" << endl<<endl;
         } else {
             cerr << "Unable to open files." << endl;
         }
     }
-
-
 }
