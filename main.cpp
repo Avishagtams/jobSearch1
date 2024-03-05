@@ -15,6 +15,12 @@ string candidateName, candidateID, candidatePassword;
 string employerName, employerID, employerPassword;
 
 void viewNewJobs();//todo: check why dd/mm/yy
+void menuEditCandidate();
+void editCandidateName();
+void editCandidateEmail();
+void editCandidatePassword();
+void editCandidateAddress();
+void editCandidatePhone();
 void menuUpdateJobs();
 void loginCandidate();
 void loginEmployer();
@@ -61,7 +67,7 @@ void mainMenu() {
     cout << "4. Register as Employer" << endl;
     cout << "5. Exit" << endl;
 
-    cout << "Enter your choice: ";
+    cout << "Enter your choice: "<<endl;
     // Checking if the input is an integer
     while (!(cin >> choice)) {
         cout << "Invalid input. Please choose again: "<<endl;
@@ -337,7 +343,7 @@ void candidateMenu() {
     cout << "4. View Submission History" << endl;
     cout << "5. Edit Profile" << endl;
     cout << "6. Logout" << endl;
-    cout << "Enter your choice: ";
+    cout << "Enter your choice: "<<endl;
     cin >> choice;
 
     switch (choice) {
@@ -357,7 +363,7 @@ void candidateMenu() {
             // Implement view submission history functionality
             break;
         case 5:
-            // Implement edit profile functionality
+            menuEditCandidate();
             break;
         case 6:
             cout << "Logging out..." << endl;
@@ -426,6 +432,296 @@ void employerMenu() {
     employerMenu();
 
 }
+
+//-------------------------------------------------> edit members of candidate
+//menu edit member candidate:
+void menuEditCandidate(){
+    int choice;
+    cout<< "hello "<<candidateName<<" what do you want to edit in your profile? "<<endl;
+    cout << "Enter your choice: "<<endl;
+    cout << "1. update your name." << endl;
+    cout << "2. update your password." << endl;
+    cout << "3. update your email." << endl;
+    cout << "4. update your address." << endl;
+    cout << "5. update your phone." << endl;
+    cout << "6. Logout" << endl;
+    while (!(cin >> choice)) {
+        cout << "Invalid input. Please choose again: "<<endl;
+        cin.clear(); // Clearing the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
+    }
+
+    switch (choice) {
+        case 1:
+            editCandidateName();
+
+            break;
+        case 2:
+            editCandidatePassword();
+
+            break;
+        case 3:
+            editCandidateEmail();
+
+
+            break;
+        case 4:
+            editCandidateAddress();
+
+
+            break;
+        case 5:
+            editCandidatePhone();
+
+
+            break;
+        case 6:
+            cout << "Logging out..." << endl;
+
+            return;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+            break;
+    }
+
+
+}
+//edit name candidate
+void editCandidateName(){
+    ifstream inputFile("candidate.txt");
+    ofstream outputFile("temp.txt");
+    string line;
+    string newName;
+    cout<<"Enter the new name: "<<endl;
+    cin>>newName;
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line)) {
+        // Check if the line contains the job name to edit
+        if (line.find("Name: " + candidateName)!=string::npos) {
+            found = true;
+
+            outputFile << "Name: "<<newName<<endl ;
+        } else {
+            outputFile << line << endl;
+        }
+
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("candidate.txt");         // Remove the old file
+        rename("temp.txt", "candidate.txt");  // Rename temp file to original name
+        cout << "Name: " << candidateName << " edited successfully.\n";
+        candidateName=newName;
+    } else {
+        cout << "Name: " << candidateName << " not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+}
+//edit name Password
+void editCandidatePassword(){
+    ifstream inputFile("candidate.txt");
+    ofstream outputFile("temp.txt");
+    string line;
+    string newPassword;
+    cout<<"Enter the new password:: "<<endl;
+    cin>>newPassword;
+
+    if (!inputFile.is_open()) {
+        cerr << "Unable to open input file.\n";
+        return;
+    }
+
+    bool found = false;
+    while (getline(inputFile, line)) {
+        // Check if the line contains the job name to edit
+        if (line.find("Password: " + candidatePassword)!=string::npos) {
+            found = true;
+
+            outputFile << "Password: "<<newPassword<<endl ;
+        } else {
+            outputFile << line << endl;
+        }
+
+    }
+
+    inputFile.close();
+    outputFile.close();
+
+    if (found) {
+        remove("candidate.txt");         // Remove the old file
+        rename("temp.txt", "candidate.txt");  // Rename temp file to original name
+        cout << "Password: " << candidateName << " edited successfully.\n";
+        candidatePassword=newPassword;
+    } else {
+        cout << "Password: " << candidateName << " not found.\n";
+        remove("temp.txt"); // Remove the temp file if the job wasn't found
+    }
+
+}
+//edit name Email
+void editCandidateEmail(){
+    string newEmail;
+    cout<<"Enter the new email: "<<endl;
+    cin>>newEmail;
+    ifstream inputFile("candidate.txt");
+    ofstream tempFile("temp.txt");
+
+
+    if (inputFile.is_open() && tempFile.is_open()) {
+        string line;
+        bool found = false;
+
+        while (getline(inputFile, line)) {
+            // Check if the line contains the ID
+            if (line.find("ID: " + candidateID) != string::npos) {
+                found = true;
+
+                // Write the ID line
+                tempFile << line << endl;
+
+                // Skip the next lines until we reach the email
+                while (getline(inputFile, line) && line.find("Email: ") == string::npos) {
+                    tempFile << line << endl;
+                }
+
+                // Update the email
+                tempFile << "Email: " << newEmail << endl;
+            } else {
+                // If the line doesn't contain the ID, write it as is to the temp file
+                tempFile << line << endl;
+            }
+        }
+
+
+        inputFile.close();
+        tempFile.close();
+
+        if (found) {
+            // Replace the original file with the temporary file
+            remove("candidate.txt");
+            rename("temp.txt", "candidate.txt");
+
+            cout << "Email updated successfully." << endl;
+        } else {
+            cout << "candidate not found." << endl;
+        }
+    } else {
+        cerr << "Unable to open files." << endl;
+    }
+}
+//edit name Address
+void editCandidateAddress(){
+    string newAdrress;
+    cout<<"Enter the new address: "<<endl;
+    cin >> newAdrress;
+    ifstream inputFile("candidate.txt");
+    ofstream tempFile("temp.txt");
+
+
+    if (inputFile.is_open() && tempFile.is_open()) {
+        string line;
+        bool found = false;
+
+        while (getline(inputFile, line)) {
+            // Check if the line contains the ID
+            if (line.find("ID: " + candidateID) != string::npos) {
+                found = true;
+
+                // Write the ID line
+                tempFile << line << endl;
+
+                // Skip the next lines until we reach the email
+                while (getline(inputFile, line) && line.find("Address: ") == string::npos) {
+                    tempFile << line << endl;
+                }
+
+                // Update the email
+                tempFile << "Address: " << newAdrress << endl;
+            } else {
+                // If the line doesn't contain the ID, write it as is to the temp file
+                tempFile << line << endl;
+            }
+        }
+
+
+        inputFile.close();
+        tempFile.close();
+
+        if (found) {
+            // Replace the original file with the temporary file
+            remove("candidate.txt");
+            rename("temp.txt", "candidate.txt");
+
+            cout << "Address updated successfully." << endl;
+        } else {
+            cout << "candidate not found." << endl;
+        }
+    } else {
+        cerr << "Unable to open files." << endl;
+    }
+}
+//edit name Phone number
+void editCandidatePhone(){
+    string newPhone;
+    cout<<"Enter the new phone number: "<<endl;
+    cin >> newPhone;
+    ifstream inputFile("candidate.txt");
+    ofstream tempFile("temp.txt");
+
+
+    if (inputFile.is_open() && tempFile.is_open()) {
+        string line;
+        bool found = false;
+
+        while (getline(inputFile, line)) {
+            // Check if the line contains the ID
+            if (line.find("ID: " + candidateID) != string::npos) {
+                found = true;
+
+                // Write the ID line
+                tempFile << line << endl;
+
+                // Skip the next lines until we reach the email
+                while (getline(inputFile, line) && line.find("Phone number: ") == string::npos) {
+                    tempFile << line << endl;
+                }
+
+                // Update the email
+                tempFile << "Phone number: " << newPhone << endl;
+            } else {
+                // If the line doesn't contain the ID, write it as is to the temp file
+                tempFile << line << endl;
+            }
+        }
+
+
+        inputFile.close();
+        tempFile.close();
+
+        if (found) {
+            // Replace the original file with the temporary file
+            remove("candidate.txt");
+            rename("temp.txt", "candidate.txt");
+
+            cout << "Phone number updated successfully." << endl;
+        } else {
+            cout << "candidate not found." << endl;
+        }
+    } else {
+        cerr << "Unable to open files." << endl;
+    }
+}
+
+
 //-----------------------------------------------------jobs
 //-------------------------------->updateJob
 void displayEditMenu() {
@@ -996,7 +1292,6 @@ void searchByDate() {
         cerr << "Unable to open file." << endl;
     }
 }
-
 // function to search jobs by a specific published name
 void searchByName() {
     string name, jobDetails;
@@ -1232,7 +1527,6 @@ void searchByType() {
         cerr << "Unable to open file." << endl;
     }
 }
-
 //A function that allows submitting a candidacy request for a certain position
 void submitCandidacy (string jobDetails){
     int applyChoice;
