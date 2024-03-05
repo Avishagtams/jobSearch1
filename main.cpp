@@ -37,7 +37,7 @@ void searchByYears();
 void searchBySalary();
 void searchByType();
 void viewPublishedJobs();
-void submitCandidacy (string jobName);
+void submitCandidacy (string jobDetails);
 void ViewOfCandidateSubmissions();
 void displayEditMenu();
 void deleteJob();
