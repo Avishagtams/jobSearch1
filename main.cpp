@@ -37,7 +37,7 @@ void searchByYears();
 void searchBySalary();
 void searchByType();
 void viewPublishedJobs();
-void submitCandidacy (string jobName);
+void submitCandidacy (string jobDetails);
 void ViewOfCandidateSubmissions();
 void displayEditMenu();
 void deleteJob();
@@ -52,6 +52,8 @@ void submitResume();
 void displayAllJobs();
 void markJobAsLiked();
 void displayLikedJobs();
+
+
 
 int main() {
 
@@ -161,11 +163,9 @@ void registerCandidate() {
     getline(cin,address);
 
     cout<<"Enter your education: High school level / BA / Master's degree / Doctorate"<<endl;
-    cin.ignore();
     getline(cin,education);
 
     cout<<"Enter your skills: (for example - increases head, highly motivated...)"<<endl;
-    cin.ignore();
     getline(cin,skills);
 
     ofstream file("candidate.txt", ios::app);
@@ -1099,8 +1099,11 @@ void addJob(){
     static int jobCounter = 1;
     time_t now = time(0);
     tm *ltm = localtime(&now);
-    string nameJ,areaJ,typeJ;
+    string nameJ,areaJ,typeJ,nameE;
     int years_experienceJ, salaryJ;
+    cout<<"Enter your name"<<endl;
+    cin.ignore();
+    getline(cin,nameE);
 
     cout<<"Enter the years of experience required"<<endl;
     cin>>years_experienceJ;
@@ -1121,7 +1124,7 @@ void addJob(){
 
     ofstream file("job.txt", ios::app);
     if (file.is_open()) {
-        file <<"Job name: " << nameJ <<" publish by: "<<employerName<<endl;
+        file <<"Job name: " << nameJ <<" publish by: "<<nameE<<endl;
         file <<"Area: " << areaJ <<endl;
         file <<"Years of experience required: "<<years_experienceJ<<endl;
         file <<"The salary is: "<<salaryJ<<endl;
@@ -1582,7 +1585,7 @@ void submitCandidacy (string jobDetails){
         ofstream submissionsFile("submissions.txt", ios::app);
         if (submissionsFile.is_open() ) {
             submissionsFile << "Submitted by: " << candidateName << " .  on date: "
-            <<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year <<  endl;
+                            <<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year <<  endl;
 
             submissionsFile << jobDetails << endl;
             submissionsFile << endl;
@@ -1650,7 +1653,7 @@ void displayAllJobs() {
 
         inFile.close();
     } else {
-        std::cerr << "Error opening job file: " << inFile << "\n";
+        std::cerr << "Error opening job file:"<<endl;
     }
     char choice;
     cout << "Would you like to like any job? (Y/N) " << endl;
@@ -1740,3 +1743,4 @@ void displayLikedJobs() {
         std::cerr << "Error opening file for displaying liked jobs.\n";
     }
 }
+
