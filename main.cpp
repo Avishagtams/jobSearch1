@@ -61,6 +61,7 @@ bool isValidPassword(const string& password);
 bool isValidEmail(const string& email);
 bool isValidID(const string& id);
 bool isValidPhoneNumber(const string& phone);
+bool checkIDExists(const string& idNumber, const string& employersFile);
 void candidateSubmissionsHistory(string candidateName);
 
 
@@ -128,6 +129,15 @@ void registerEmployer() {
         cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
         cin>>employerID;
     }
+    while (checkIDExists(employerID,"employers.txt")) {
+        cout << "The ID exists in the system, please type again" << endl;
+        cin>>employerID;
+        while (!isValidID(employerID)) {
+            cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
+            cin>>employerID;
+        }
+        checkIDExists(employerID,"employers.txt");
+    }
 
     cout<< "Enter your password: "<<endl;
     cin>>employerPassword;
@@ -175,6 +185,15 @@ void registerCandidate() {
     while (!isValidID(candidateID)) {
         cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
         cin>>candidateID;
+    }
+    while (checkIDExists(candidateID,"candidate.txt")) {
+        cout << "The ID exists in the system, please type again" << endl;
+        cin>>candidateID;
+        while (!isValidID(candidateID)) {
+            cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
+            cin>>candidateID;
+        }
+        checkIDExists(candidateID,"candidate.txt");
     }
     cout<< "Enter your password: "<<endl;
     cin>>candidatePassword;
@@ -353,7 +372,6 @@ void viewNewJobs() {
             // Converting two-digit years to four digits (assuming 20th century)
             if (yearA < 100) yearA += 2000;
             if (yearB < 100) yearB += 2000;
-
             if (yearA != yearB) {
                 return yearA > yearB;
             } else if (monthA != monthB) {
@@ -1911,6 +1929,38 @@ void displayLikedJobs() {
         cout<<candidateName<<endl;
     }
 }
+void candidateSubmissionsHistory(string candidateName){
+
+    ifstream file("submissions.txt");
+
+    if (file.is_open()) {
+        string line;
+        bool found = false; // Flag to check if job was found
+
+        while (getline(file, line)) {
+            if (line.find("Submitted by: " + candidateName) != string::npos) {
+                cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                cout<<endl;
+                found = true; // Job found
+                // No break here, so it continues searching
+            }
+
+        }
+
+        file.close();
+
+        if (!found) {
+            cout << "submissions not found." << endl<<endl;
+        }
+    } else {
+        cerr << "Unable to open file." << endl;
+    }
+}
 //------------------------------------------------> check
 bool isOnlyLetters(const string& name) {
     int i = 0;
@@ -1960,36 +2010,20 @@ bool isValidPhoneNumber(const string& phone) {
     }
     return true;
 }
+bool checkIDExists(const string& ID, const string& filename) {
+    ifstream file(filename);
+    string line;
 
-void candidateSubmissionsHistory(string candidateName){
-
-    ifstream file("submissions.txt");
-
-    if (file.is_open()) {
-        string line;
-        bool found = false; // Flag to check if job was found
-
-        while (getline(file, line)) {
-            if (line.find("Submitted by: " + candidateName) != string::npos) {
-                cout << line << endl;
-
-                while (getline(file, line) && !line.empty()) {
-                    cout << line << endl;
-                }
-
-                cout<<endl;
-                found = true; // Job found
-                // No break here, so it continues searching
+    while (getline(file, line)) {
+        if (line.find("ID: ") == 0) {
+            string id = line.substr(4); // קובץ ID ללא התווית "ID: "
+            if (id == ID) {
+                file.close();
+                return true;
             }
-
         }
-
-        file.close();
-
-        if (!found) {
-            cout << "submissions not found." << endl<<endl;
-        }
-    } else {
-        cerr << "Unable to open file." << endl;
     }
+
+    file.close();
+    return false;
 }
