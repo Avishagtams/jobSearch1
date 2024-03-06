@@ -285,6 +285,7 @@ void loginEmployer() {
             employerMenu();
         } else {
             cout << "Invalid id or password. Please try again!\n";
+            loginEmployer();
         }
     } else {
         cerr << "Unable to open file for employer login.\n";
@@ -1774,6 +1775,7 @@ void viewCandidateSubmissionsForEmployer() {
             prevLine = line;
 
         }
+        if(!foundCandidate){cout<<"No candidates found"<<endl;}
     } else {
         if (choiceFilter == 2) {
             std::ifstream submissionsFile("submissions.txt");
