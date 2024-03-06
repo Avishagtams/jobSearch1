@@ -8,13 +8,15 @@
 #include <cstring>
 #include <algorithm>
 #include <sstream>
+#include <cctype>
+#include <regex>
 
 using namespace std;
 
 string candidateName, candidateID, candidatePassword;
 string employerName, employerID, employerPassword;
 
-void viewNewJobs();//todo: check why dd/mm/yy
+void viewNewJobs();
 void menuEditCandidate();
 void editCandidateName();
 void editCandidateEmail();
@@ -38,7 +40,6 @@ void searchBySalary();
 void searchByType();
 void viewPublishedJobs();
 void submitCandidacy (string jobDetails);
-
 void ViewOfCandidateSubmissions();
 void displayEditMenu();
 void deleteJob();
@@ -52,7 +53,18 @@ void mainMenu();
 void submitResume();
 void viewCandidateSubmissionsForEmployer();
 bool findCandidateEducation(const std::string& candidateName, const std::string& userEducation);
-
+void markJobAsLiked();
+void displayAllJobs();
+void displayLikedJobs();
+bool isOnlyLetters(const string& name);
+bool isValidPassword(const string& password);
+bool isValidEmail(const string& email);
+bool isValidID(const string& id);
+bool isValidPhoneNumber(const string& phone);
+bool isValidEducation(const string& education);
+bool isValidJob(const string& desiredJob);
+bool isValidNumber(int candidateExperience);
+bool isValidAddress(const string& address);
 
 int main() {
 
@@ -108,17 +120,32 @@ void registerEmployer() {
     string id,password,name,email,company_name;
     cout<< "Enter your name: "<<endl;
     cin>>name;
-    while (id.size()!=9) {
-        cout << "Enter your id: " << endl;
-        cin >> id;
+    while(!isOnlyLetters(name)) {
+        cout << "Try again, enter only letters" << endl;
+        cin>>name;
+    }
+    cout << "Enter your id: " << endl;
+    cin >> id;
+    while (!isValidID(id)) {
+        cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
+        cin>>id;
     }
 
     cout<< "Enter your password: "<<endl;
     cin>>password;
-    cout<<"Enter your email: "<<endl;
+    while(!isValidPassword(password)) {
+        cout << "Invalid password!,try again" << endl;
+        cin>>password;
+    }
+    cout<<"Enter your email address (ending with @gmail.com) : "<<endl;
     cin>>email;
+    while(!isValidEmail(email)) {
+        cout << "Invalid email address!,try again" << endl;
+        cin>>email;
+    }
     cout<<"Enter your company name: "<<company_name<<endl;
     cin>>company_name;
+
     ofstream file("employers.txt", ios::app);
     if (file.is_open()) {
         file <<"ID: " << id <<endl;
@@ -138,33 +165,54 @@ void registerEmployer() {
 void registerCandidate() {
     string id,password,name,birth_date,email,phone,address,education,skills;
     cout<< "Enter your name: "<<endl;
-    cin>>name; // TODO check if: 1.there is numbers in the name ,2.check if there is two same names
-    while (id.size()!=9) {
-        cout << "Enter your id: " << endl;
-        cin >> id; // TODO check if there is no letters in the id
+    cin>>name; // TODO check if:2.check if there is two same names
+    while(!isOnlyLetters(name)) {
+        cout << "Try again, enter only letters" << endl;
+        cin>>name;
+    }
+    cout << "Enter your id: " << endl;
+    cin >> id;
+    while (!isValidID(id)) {
+        cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
+        cin>>id;
     }
     cin.ignore();
     cout<< "Enter your password: "<<endl;
     cin>>password;
-
+    while(!isValidPassword(password)) {
+        cout << "Invalid password!,try again" << endl;
+        cin>>password;
+    }
     cin.ignore();
-    cout<<"Enter your birth date: "<<birth_date<<endl;
-    getline(cin,birth_date);
-
+    cout<<"Enter your birth date: ";
+    getline(cin, birth_date);
     cout<<"Enter your email: "<<email<<endl;
     cin>>email;
-
+    while(!isValidEmail(email)) {
+        cout << "Invalid email address!,try again" << endl;
+        cin>>email;
+    }
     cin.ignore();
     cout<<"Enter your phone number: "<<phone<<endl;
     getline(cin,phone);
-
+    while (!isValidPhoneNumber(phone)) {
+        cout << "Invalid phone number! Please enter a 10-digit number without any letters,try again" << endl;
+        getline(cin, phone);
+    }
     cout<<"Enter your address: "<<address<<endl;
     getline(cin,address);
-
+    while (!isValidAddress(address)){
+        cout << "Error: The entered address is invalid. Please enter again.\n";
+        cout << "Please enter your address: ";
+        getline(cin, address);
+    }
     cout<<"Enter your education: High school level / BA / Master's degree / Doctorate"<<endl;
     cin.ignore();
     getline(cin,education);
-
+    while (!isValidEducation(education)) {
+        cout << "Error: Invalid education level! Please enter one of the following: High school level, BA, Master's degree, Doctorate" << endl;
+        getline(cin, education);
+    }
     cout<<"Enter your skills: (for example - increases head, highly motivated...)"<<endl;
     cin.ignore();
     getline(cin,skills);
@@ -203,10 +251,22 @@ void readFile(const string& filename, vector<string>& data) {
 void loginEmployer() {
     cout << "Enter your name: "<<endl;
     cin >> employerName;
+    while(!isOnlyLetters(employerName)) {
+        cout << "Try again, enter only letters" << endl;
+        cin>>employerName;
+    }
     cout << "Enter id: "<<endl;
     cin >> employerID;
+    while (!isValidID(employerID)) {
+        cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
+        cin>>employerID;
+    }
     cout << "Enter password: "<<endl;
     cin >> employerPassword;
+    while(!isValidPassword(employerPassword)) {
+        cout << "Invalid password!,try again" << endl;
+        cin>>employerPassword;
+    }
 
     ifstream file("employers.txt");
     if (file.is_open()) {
@@ -234,13 +294,24 @@ void loginEmployer() {
 }
 //if candidate in text
 void loginCandidate() {
-
     cout << "Enter id: "<<endl;
     cin >> candidateID;
+    while (!isValidID(candidateID)) {
+        cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
+        cin>>candidateID;
+    }
     cout << "Enter password: "<<endl;
     cin >> candidatePassword;
+    while(!isValidPassword(candidatePassword)) {
+        cout << "Invalid password!,try again" << endl;
+        cin>>candidatePassword;
+    }
     cout << "Enter name: "<<endl;
     cin >> candidateName;
+    while(!isOnlyLetters(candidateName)) {
+        cout << "Try again, enter only letters" << endl;
+        cin>>candidateName;
+    }
 
 
     ifstream file("candidate.txt");
@@ -272,15 +343,31 @@ void loginCandidate() {
         cerr << "Unable to open file for candidate login.\n";
     }
 }
+
 void viewNewJobs() {
     string desiredJob;
     int candidateExperience;
     cout << endl;
     cout << "Enter the desired job: " << endl;
-    cin >> desiredJob;
+    while (!(cin >> desiredJob)) {
+        cout << "Invalid input. Please choose again: "<<endl;
+        cin.clear(); // Clearing the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
+    }
+    while (!isValidJob(desiredJob)) {
+        cout << "Error: Invalid input! Please enter alphabetic characters and spaces only." << endl;
+        cout << "Enter your desired job: ";
+        getline(cin, desiredJob);
+    }
     cout << "Enter your years of experience: " << endl;
     cin >> candidateExperience;
+    while (!isValidNumber(candidateExperience)) {
+        cout << "Error: Invalid input! Please enter a non-negative integer." << endl;
+        cout << "Enter your years of experience: ";
+        cin >> candidateExperience;
+    }
     cout << endl;
+
 
     ifstream file("job.txt");
     string line;
@@ -337,42 +424,50 @@ void viewNewJobs() {
         cout << "No matching jobs found." << endl;
     }
 }
+
 void candidateMenu() {
     // Implement candidate menu options as per requirements
     // You can add options like searching for jobs, submitting resumes, etc.
     int choice;
     cout << "What do you want to do today?" << endl;
-    cout << "1. Look for new Jobs" << endl;
-    cout << "2. Search for Jobs" << endl;
-    cout << "3. Submit Resume" << endl;
-    cout << "4. View Submission History" << endl;
-    cout << "5. Edit Profile" << endl;
-    cout << "6. Logout" << endl;
+    cout<<  "1. View all jobs" <<endl;
+    cout << "2. new Jobs recently published" << endl;
+    //It is possible to apply
+    cout << "3. Search for Jobs and application" << endl;
+    cout << "4. Submit Resume" << endl;
+    cout << "5. View Submission History" << endl;
+    cout << "6. View liked jobs "<<endl;
+    cout << "7. Edit Profile" << endl;
+    cout << "8. Logout" << endl;
     cout << "Enter your choice: "<<endl;
     cin >> choice;
 
     switch (choice) {
         case 1:
+            displayAllJobs();
+            break;
+        case 2:
             // Search for new jobs by field and years of experience
             viewNewJobs();
             break;
-        case 2:
-            // Implement job search functionality
-            searchForJob();//TODO fix it
-            break;
         case 3:
-            // Implement resume submission functionality
-            //submitResume();
+            searchForJob();
             break;
         case 4:
-            // Implement view submission history functionality
-            ViewOfCandidateSubmissions();
+            submitResume();
             break;
         case 5:
-            menuEditCandidate();
+            // Implement view submission history functionality
             break;
         case 6:
+            displayLikedJobs();
+            break;
+        case 7:
+            menuEditCandidate();
+            break;
+        case 8:
             cout << "Logging out..." << endl;
+            mainMenu();
             // Return to main menu
             return;
         default:
@@ -388,6 +483,7 @@ void employerMenu() {
     // Implement employer menu options as per requirements
     // You can add options like publishing, deleting, and updating jobs, viewing submissions, etc.
     int choice;
+    cout<<"hii "<<employerName<<endl;
     cout << endl << "Welcome to Employer Menu!" << endl;
     cout << "Enter your choice: "<<endl;
     cout << "1. Publish a Job" << endl;
@@ -423,6 +519,7 @@ void employerMenu() {
 
         case 6:
             cout << "Logging out..." << endl;
+            mainMenu();
             // Return to main menu
             return;
         default:
@@ -496,8 +593,12 @@ void editCandidateName(){
     string newName;
     cout<<"Enter the new name: "<<endl;
     cin>>newName;
+    while (!isOnlyLetters(newName)){
+        cout<<"Enter only letters";
+        cin>>newName;
+    }
 
-    if (!inputFile.is_open()) {
+        if (!inputFile.is_open()) {
         cerr << "Unable to open input file.\n";
         return;
     }
@@ -1328,7 +1429,6 @@ void searchByDate() {
         cerr << "Unable to open file." << endl;
     }
 }
-
 // function to search jobs by a specific published name
 void searchByName() {
     string name, jobDetails;
@@ -1641,7 +1741,7 @@ bool findCandidateEducation(const std::string& candidateName1, const std::string
 }
 void viewCandidateSubmissionsForEmployer() {
     string jobTitle;
-    cout << "Enter the job title you want to filter candidates for: ";
+    cout << "Enter the job title you want to filter candidates for: "<<endl;
     cin.ignore();
     getline(cin , jobTitle);
     int choiceFilter;
@@ -1715,4 +1815,185 @@ void viewCandidateSubmissionsForEmployer() {
         }else {
             cout << "Invalid choice." << endl;}
     }
+}
+void submitResume() {
+    string resumeLink;
+    cout<<"* The file must be one of that formats: PDF/DOC/DOCX"<<endl;
+    cout<<"* The file size should not exceed 5 MB"<<endl;
+    cout << "Enter " << candidateName << "'s resume link: ";
+    cin.ignore();
+    getline(cin, resumeLink);
+
+    ofstream resumeFile(candidateName + "_Resume_Link.txt", ios::app);
+
+    if (resumeFile.is_open()){
+        resumeFile << resumeLink <<endl;
+        resumeFile.close();
+        cout << "Resume link added successfully for " << candidateName << "." << endl;
+    }
+}
+void displayAllJobs() {
+    std::ifstream inFile("job.txt");
+    if (inFile.is_open()) {
+        std::string line;
+        cout << endl;
+
+        while (std::getline(inFile, line)) {
+            if (line.empty()) {
+                // Empty line encountered, print a separator
+                std::cout << "------------------------\n";
+            } else {
+                std::cout << line << "\n";
+            }
+        }
+
+        inFile.close();
+    } else {
+        std::cerr << "Error opening job file:"<<endl;
+    }
+    char choice;
+    cout << "Would you like to like any job? (Y/N) " << endl;
+    cin >> choice;
+    if (choice == 'Y') {
+        markJobAsLiked();
+    } else if (choice == 'N') {
+        return;
+    }
+}
+void markJobAsLiked() {
+    string publisherName, jobName;
+
+    cout << "Enter the publisher's name: "<<endl;
+    cin.ignore();
+    getline(cin, publisherName);
+
+    cout << "Enter the job name: "<<endl;
+    getline(cin, jobName);
+
+    ifstream jobFile("job.txt");
+    ofstream likedJobsFile(candidateName + "_liked_jobs.txt", ios::app);
+
+    if (jobFile.is_open() && likedJobsFile.is_open()) {
+        string line;
+        bool jobFound = false;
+
+        while (getline(jobFile, line)) {
+            size_t line1 = line.find("Job name: " + jobName + " publish by: " + publisherName);
+
+            if (line1 != string::npos) {
+                jobFound = true;
+
+                // Write and print each line of the job information
+                do {
+                    likedJobsFile << line << "\n"; // Write each line to the likedJobsFile
+
+                    // Read the next line
+                    if (getline(jobFile, line)) {
+                        // Check if the next line is empty
+                        if (line.empty()) {
+                            break; // Break the loop if an empty line is encountered
+                        }
+                    } else {
+                        break; // Break if there are no more lines to read
+                    }
+                } while (true);
+
+                cout << "Job marked as liked.\n";
+                break;
+            }
+        }
+
+        if (!jobFound) {
+            cout << "Job not found based on the specified publisher and job name.\n";
+        }
+
+        jobFile.close();
+        likedJobsFile.close();
+    } else {
+        cerr << "Error opening files for copying liked jobs.\n";
+    }
+}
+void displayLikedJobs() {
+    cout<<"------------------------------------"<<endl;
+
+    std::ifstream inFile(candidateName + "_liked_jobs.txt");
+    if (inFile.is_open()) {
+        std::string line;
+
+        while (std::getline(inFile, line)) {
+            std::cout << line << "\n";
+        }
+        cout<<"------------------------------------"<<endl;
+
+        inFile.close();
+    } else {
+        std::cerr << "Error opening file for displaying liked jobs.\n";
+    }
+}
+//------------------------------------------------> check
+bool isOnlyLetters(const string& name) {
+    int i = 0;
+    while (name[i] != '\0' ) {
+        if (!isalpha(name[i])) {
+            return false;
+        }
+        i++;
+    }
+    return true;
+}
+bool isValidPassword(const string& password) {
+    if (password.length() < 8)
+        return false;
+
+    bool hasLetter = false;
+    for (char ch : password) {
+        if (isspace(ch))
+            return false;
+        if (isalpha(ch))
+            hasLetter = true;
+    }
+
+    return hasLetter;
+}
+bool isValidEmail(const string& email) {
+    const regex pattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
+
+    return regex_match(email, pattern);
+}
+bool isValidID(const string& id) {
+    if (id.length() != 9)
+        return false;
+
+    for (char ch : id) {
+        if (!isdigit(ch))
+            return false;
+    }
+
+    return true;
+}
+bool isValidPhoneNumber(const string& phone) {
+    if (phone.length() != 10)
+        return false;
+
+    for (char digit : phone) {
+        if (!isdigit(digit))
+            return false;
+    }
+    return true;
+}
+bool isValidEducation(const string& education) {
+    return (education == "High school level" || education == "BA" || education == "Master's degree" || education == "Doctorate");
+}
+bool isValidJob(const string& desiredJob) {
+    for (char ch : desiredJob) {
+        if (!isalpha(ch) && !isspace(ch))
+            return false;
+    }
+    return true;
+}
+bool isValidNumber(int candidateExperience) {
+    return (candidateExperience >= 0);
+}
+bool isValidAddress(const string& address) {
+    return !address.empty();
 }
