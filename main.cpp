@@ -50,6 +50,9 @@ void editJobByType(const string& publisher);
 void editJobByDate(const string& publisher);
 void mainMenu();
 void submitResume();
+void viewCandidateSubmissionsForEmployer();
+bool findCandidateEducation(const std::string& candidateName, const std::string& userEducation);
+
 
 int main() {
 
@@ -414,8 +417,7 @@ void employerMenu() {
             viewPublishedJobs();
             break;
         case 5:
-            ViewOfCandidateSubmissions();
-
+            viewCandidateSubmissionsForEmployer();
             break;
 
         case 6:
@@ -1615,5 +1617,101 @@ void submitCandidacy (string jobDetails){
         } else {
             cerr << "Unable to open files." << endl;
         }
+    }
+}
+bool findCandidateEducation(const std::string& candidateName1, const std::string& userEducation) {
+    std::ifstream candidatesFile("candidate.txt");
+    if (!candidatesFile.is_open()) {
+        std::cerr << "Error opening candidates file!" << std::endl;
+        return false;
+    }
+
+    std::string line;
+    while (std::getline(candidatesFile, line)) {
+        if (line == candidateName1) {
+            std::getline(candidatesFile, line); // Read education line
+            if (line == userEducation) {
+                return true; // Education matches
+            }
+        }
+    }
+
+    return false; // Education not found or doesn't match
+}
+void viewCandidateSubmissionsForEmployer() {
+    string jobTitle;
+    cout << "Enter the job title you want to filter candidates for: ";
+    cin.ignore();
+    getline(cin , jobTitle);
+    int choiceFilter;
+    cout << "View the candidates who have applied" << endl;
+    cout << "1. All the Candidates" << endl;
+    cout << "2. Filter by education's candidate" << endl;
+    cin >> choiceFilter;
+
+    if (choiceFilter == 1) {
+        std::ifstream file("submissions.txt");
+        if (!file.is_open()) {
+            std::cerr << "Error opening file!" << std::endl;
+            return;
+        }
+
+        std::string line;
+        bool foundCandidate = false;
+        std::string prevLine;
+        while (std::getline(file, line)) {
+            if (line.find("Job name: " + jobTitle) != std::string::npos) {
+                // Print the line before job details
+                if (!prevLine.empty()) {
+                    std::cout << prevLine << std::endl;
+                }
+                foundCandidate = true;
+
+                // Empty line after each job
+                std::cout << std::endl;
+            }
+            prevLine = line;
+
+        }
+    } else {
+        if (choiceFilter == 2) {
+            std::ifstream submissionsFile("submissions.txt");
+            if (!submissionsFile.is_open()) {
+                std::cerr << "Error opening submissions file!" << std::endl;
+                return ;
+            }
+            std::string userEducation;
+
+            // Get job title and required education from user
+            std::cout << "Enter education qualification: "<<endl;
+            cin.ignore();
+            std::getline(std::cin, userEducation);
+
+            std::string line;
+            std::vector<std::string> foundCandidates; // Vector to store found candidates
+
+            // Search for candidates for the given job title in submissions file
+            while (std::getline(submissionsFile, line)) {
+                if (line.find("Job name: " + jobTitle) != std::string::npos) {
+                    std::string candidateName1 = line.substr(10); // Extract candidate name
+                    bool educationMatch = findCandidateEducation(candidateName, userEducation);
+                    if (educationMatch) {
+                        foundCandidates.push_back(candidateName);
+                    }
+                }
+            }
+
+            // Print the found candidates
+            if (foundCandidates.empty()) {
+                std::cout << "No matching candidates found." << std::endl;
+            } else {
+                std::cout << "Matching candidates:" << std::endl;
+                for (const auto& candidate : foundCandidates) {
+                    std::cout << candidate << std::endl;
+                }
+            }
+
+        }else {
+            cout << "Invalid choice." << endl;}
     }
 }
