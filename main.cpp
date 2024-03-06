@@ -61,6 +61,8 @@ bool isValidPassword(const string& password);
 bool isValidEmail(const string& email);
 bool isValidID(const string& id);
 bool isValidPhoneNumber(const string& phone);
+void candidateSubmissionsHistory(string candidateName);
+
 
 int main() {
 
@@ -407,7 +409,7 @@ void candidateMenu() {
             submitResume();
             break;
         case 5:
-            // Implement view submission history functionality
+            candidateSubmissionsHistory(candidateName);
             break;
         case 6:
             displayLikedJobs();
@@ -1957,4 +1959,37 @@ bool isValidPhoneNumber(const string& phone) {
             return false;
     }
     return true;
+}
+
+void candidateSubmissionsHistory(string candidateName){
+
+    ifstream file("submissions.txt");
+
+    if (file.is_open()) {
+        string line;
+        bool found = false; // Flag to check if job was found
+
+        while (getline(file, line)) {
+            if (line.find("Submitted by: " + candidateName) != string::npos) {
+                cout << line << endl;
+
+                while (getline(file, line) && !line.empty()) {
+                    cout << line << endl;
+                }
+
+                cout<<endl;
+                found = true; // Job found
+                // No break here, so it continues searching
+            }
+
+        }
+
+        file.close();
+
+        if (!found) {
+            cout << "submissions not found." << endl<<endl;
+        }
+    } else {
+        cerr << "Unable to open file." << endl;
+    }
 }
