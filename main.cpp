@@ -353,11 +353,11 @@ void viewNewJobs() {
             if (yearB < 100) yearB += 2000;
 
             if (yearA != yearB) {
-                return yearA < yearB;
+                return yearA > yearB;
             } else if (monthA != monthB) {
-                return monthA < monthB;
+                return monthA > monthB;
             } else if (dayA != dayB) {
-                return dayA < dayB;
+                return dayA > dayB;
             } else {
                 return false; // If the dates are the same, keep the original order.
             }
