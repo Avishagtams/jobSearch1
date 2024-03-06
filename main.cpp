@@ -366,6 +366,7 @@ void candidateMenu() {
             break;
         case 4:
             // Implement view submission history functionality
+            ViewOfCandidateSubmissions();
             break;
         case 5:
             menuEditCandidate();
