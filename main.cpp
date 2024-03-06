@@ -212,17 +212,16 @@ void registerCandidate() {
         cin>>email;
     }
     cout<<"Enter your phone number: "<<endl;
-    getline(cin,phone);
+    cin>>phone;
     while (!isValidPhoneNumber(phone)) {
         cout << "Invalid phone number! Please enter a 10-digit number without any letters,try again" << endl;
-        getline(cin, phone);
+        cin>>phone;
     }
     cout<<"Enter your address: "<<address<<endl;
-    getline(cin,address);
+    cin>>address;
 
     cout<<"Enter your education: High school level / BA / Master's degree / Doctorate"<<endl;
-    cin.ignore();
-    getline(cin,education);
+    cin>>education;
 
     cout<<"Enter your skills: (for example - increases head, highly motivated...)"<<endl;
     cin.ignore();
@@ -389,6 +388,9 @@ void viewNewJobs() {
             int requiredExperience = stoi(job.substr(pos + 30));
             if (candidateExperience >= requiredExperience) {
                 cout << job << endl;
+            }
+            else{
+                cout<<"No job was found that matches your years of experience"<<endl;
             }
         }
     } else {
