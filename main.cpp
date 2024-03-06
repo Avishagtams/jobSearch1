@@ -61,10 +61,6 @@ bool isValidPassword(const string& password);
 bool isValidEmail(const string& email);
 bool isValidID(const string& id);
 bool isValidPhoneNumber(const string& phone);
-bool isValidEducation(const string& education);
-bool isValidJob(const string& desiredJob);
-bool isValidNumber(int candidateExperience);
-bool isValidAddress(const string& address);
 
 int main() {
 
@@ -117,40 +113,42 @@ void mainMenu() {
 }
 // Method to register a new employer
 void registerEmployer() {
-    string id,password,name,email,company_name;
+    string email,company_name;
     cout<< "Enter your name: "<<endl;
-    cin>>name;
-    while(!isOnlyLetters(name)) {
+    cin>>employerName;
+    while(!isOnlyLetters(employerName)) {
         cout << "Try again, enter only letters" << endl;
-        cin>>name;
+        cin>>employerName;
     }
     cout << "Enter your id: " << endl;
-    cin >> id;
-    while (!isValidID(id)) {
+    cin >> employerID;
+    while (!isValidID(employerID)) {
         cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
-        cin>>id;
+        cin>>employerID;
     }
 
     cout<< "Enter your password: "<<endl;
-    cin>>password;
-    while(!isValidPassword(password)) {
-        cout << "Invalid password!,try again" << endl;
-        cin>>password;
+    cin>>employerPassword;
+    while(!isValidPassword(employerPassword)) {
+        cout << "Invalid password!, at least 8 digits include 2 letters. " << endl;
+        cin>>employerPassword;
     }
+
     cout<<"Enter your email address (ending with @gmail.com) : "<<endl;
     cin>>email;
     while(!isValidEmail(email)) {
         cout << "Invalid email address!,try again" << endl;
         cin>>email;
     }
+
     cout<<"Enter your company name: "<<company_name<<endl;
     cin>>company_name;
 
     ofstream file("employers.txt", ios::app);
     if (file.is_open()) {
-        file <<"ID: " << id <<endl;
-        file <<"Password: " << password <<endl;
-        file <<"Name: "<<name<<endl;
+        file <<"ID: " << employerID <<endl;
+        file <<"Password: " << employerPassword <<endl;
+        file <<"Name: "<<employerName<<endl;
         file <<"Email: "<<email<<endl;
         file <<"Company's name: "<<company_name<<endl;
         file <<endl;
@@ -163,37 +161,36 @@ void registerEmployer() {
 }
 // Method to register a new candidate
 void registerCandidate() {
-    string id,password,name,birth_date,email,phone,address,education,skills;
+    string birth_date,email,phone,address,education,skills;
     cout<< "Enter your name: "<<endl;
-    cin>>name; // TODO check if:2.check if there is two same names
-    while(!isOnlyLetters(name)) {
+    cin>>candidateName;
+    while(!isOnlyLetters(candidateName)) {
         cout << "Try again, enter only letters" << endl;
-        cin>>name;
+        cin>>candidateName;
     }
     cout << "Enter your id: " << endl;
-    cin >> id;
-    while (!isValidID(id)) {
+    cin >> candidateID;
+    while (!isValidID(candidateID)) {
         cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
-        cin>>id;
+        cin>>candidateID;
     }
-    cin.ignore();
     cout<< "Enter your password: "<<endl;
-    cin>>password;
-    while(!isValidPassword(password)) {
-        cout << "Invalid password!,try again" << endl;
-        cin>>password;
+    cin>>candidatePassword;
+    while(!isValidPassword(candidatePassword)) {
+        cout << "Invalid password!, at least 8 digits include 2 letters. " << endl;
+        cin>>candidatePassword;
     }
     cin.ignore();
-    cout<<"Enter your birth date: ";
-    getline(cin, birth_date);
-    cout<<"Enter your email: "<<email<<endl;
+    cout<<"Enter your birth date: "<<birth_date<<endl;
+    getline(cin,birth_date);
+
+    cout<<"Enter your email address (ending with @gmail.com) : "<<endl;
     cin>>email;
     while(!isValidEmail(email)) {
         cout << "Invalid email address!,try again" << endl;
         cin>>email;
     }
-    cin.ignore();
-    cout<<"Enter your phone number: "<<phone<<endl;
+    cout<<"Enter your phone number: "<<endl;
     getline(cin,phone);
     while (!isValidPhoneNumber(phone)) {
         cout << "Invalid phone number! Please enter a 10-digit number without any letters,try again" << endl;
@@ -201,27 +198,20 @@ void registerCandidate() {
     }
     cout<<"Enter your address: "<<address<<endl;
     getline(cin,address);
-    while (!isValidAddress(address)){
-        cout << "Error: The entered address is invalid. Please enter again.\n";
-        cout << "Please enter your address: ";
-        getline(cin, address);
-    }
+
     cout<<"Enter your education: High school level / BA / Master's degree / Doctorate"<<endl;
     cin.ignore();
     getline(cin,education);
-    while (!isValidEducation(education)) {
-        cout << "Error: Invalid education level! Please enter one of the following: High school level, BA, Master's degree, Doctorate" << endl;
-        getline(cin, education);
-    }
+
     cout<<"Enter your skills: (for example - increases head, highly motivated...)"<<endl;
     cin.ignore();
     getline(cin,skills);
 
     ofstream file("candidate.txt", ios::app);
     if (file.is_open()) {
-        file <<"ID: " << id <<endl;
-        file <<"Password: "<< password  <<endl;
-        file <<"Name: "<<name<<endl;
+        file << "ID: " << candidateID << endl;
+        file << "Password: " << candidatePassword << endl;
+        file << "Name: " << candidateName << endl;
         file <<"Birth date: "<<birth_date<<endl;
         file <<"Email: "<<email<<endl;
         file <<"Phone number: "<<phone<<endl;
@@ -251,22 +241,10 @@ void readFile(const string& filename, vector<string>& data) {
 void loginEmployer() {
     cout << "Enter your name: "<<endl;
     cin >> employerName;
-    while(!isOnlyLetters(employerName)) {
-        cout << "Try again, enter only letters" << endl;
-        cin>>employerName;
-    }
     cout << "Enter id: "<<endl;
     cin >> employerID;
-    while (!isValidID(employerID)) {
-        cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
-        cin>>employerID;
-    }
     cout << "Enter password: "<<endl;
     cin >> employerPassword;
-    while(!isValidPassword(employerPassword)) {
-        cout << "Invalid password!,try again" << endl;
-        cin>>employerPassword;
-    }
 
     ifstream file("employers.txt");
     if (file.is_open()) {
@@ -294,24 +272,13 @@ void loginEmployer() {
 }
 //if candidate in text
 void loginCandidate() {
+
     cout << "Enter id: "<<endl;
     cin >> candidateID;
-    while (!isValidID(candidateID)) {
-        cout << "Invalid ID number! Please enter exactly 9 digits." << endl;
-        cin>>candidateID;
-    }
     cout << "Enter password: "<<endl;
     cin >> candidatePassword;
-    while(!isValidPassword(candidatePassword)) {
-        cout << "Invalid password!,try again" << endl;
-        cin>>candidatePassword;
-    }
     cout << "Enter name: "<<endl;
     cin >> candidateName;
-    while(!isOnlyLetters(candidateName)) {
-        cout << "Try again, enter only letters" << endl;
-        cin>>candidateName;
-    }
 
 
     ifstream file("candidate.txt");
@@ -343,31 +310,15 @@ void loginCandidate() {
         cerr << "Unable to open file for candidate login.\n";
     }
 }
-
 void viewNewJobs() {
     string desiredJob;
     int candidateExperience;
     cout << endl;
     cout << "Enter the desired job: " << endl;
-    while (!(cin >> desiredJob)) {
-        cout << "Invalid input. Please choose again: "<<endl;
-        cin.clear(); // Clearing the error flag
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discarding invalid input
-    }
-    while (!isValidJob(desiredJob)) {
-        cout << "Error: Invalid input! Please enter alphabetic characters and spaces only." << endl;
-        cout << "Enter your desired job: ";
-        getline(cin, desiredJob);
-    }
+    cin >> desiredJob;
     cout << "Enter your years of experience: " << endl;
     cin >> candidateExperience;
-    while (!isValidNumber(candidateExperience)) {
-        cout << "Error: Invalid input! Please enter a non-negative integer." << endl;
-        cout << "Enter your years of experience: ";
-        cin >> candidateExperience;
-    }
     cout << endl;
-
 
     ifstream file("job.txt");
     string line;
@@ -424,7 +375,6 @@ void viewNewJobs() {
         cout << "No matching jobs found." << endl;
     }
 }
-
 void candidateMenu() {
     // Implement candidate menu options as per requirements
     // You can add options like searching for jobs, submitting resumes, etc.
@@ -598,7 +548,7 @@ void editCandidateName(){
         cin>>newName;
     }
 
-        if (!inputFile.is_open()) {
+    if (!inputFile.is_open()) {
         cerr << "Unable to open input file.\n";
         return;
     }
@@ -637,6 +587,10 @@ void editCandidatePassword(){
     string newPassword;
     cout<<"Enter the new password:: "<<endl;
     cin>>newPassword;
+    while (!isValidPassword(newPassword)){
+        cout << "Invalid password!,try again" << endl;
+        cin>>newPassword;
+    }
 
     if (!inputFile.is_open()) {
         cerr << "Unable to open input file.\n";
@@ -675,10 +629,13 @@ void editCandidateEmail(){
     string newEmail;
     cout<<"Enter the new email: "<<endl;
     cin>>newEmail;
+    while(!isValidEmail(newEmail)) {
+        cout << "Invalid email address!,try again" << endl;
+        cin>>newEmail;
+    }
+
     ifstream inputFile("candidate.txt");
     ofstream tempFile("temp.txt");
-
-
     if (inputFile.is_open() && tempFile.is_open()) {
         string line;
         bool found = false;
@@ -777,6 +734,10 @@ void editCandidatePhone(){
     string newPhone;
     cout<<"Enter the new phone number: "<<endl;
     cin >> newPhone;
+    while(!isValidPhoneNumber(newPhone)){
+        cout << "Invalid phone number! Please enter a 10-digit number without any letters,try again" << endl;
+        cin>>newPhone;
+    }
     ifstream inputFile("candidate.txt");
     ofstream tempFile("temp.txt");
 
@@ -882,8 +843,13 @@ void editJobByName(const string& publisher) {
     string line,nameToEdit,nameNew;
     cout<<"Enter the name that you want to edit: "<<endl;
     cin>>nameToEdit;
-    cout<<"Enter the  new name for job: "<<endl;
+    cout<<"Enter the new name for job: "<<endl;
     cin>>nameNew;
+    while (!isOnlyLetters(nameNew)){
+        cout<<"Enter only letters";
+        cin>>nameNew;
+    }
+
 
 
     if (!inputFile.is_open()) {
@@ -1080,6 +1046,10 @@ void editJobByType(const string& publisher) {
     cin >> currentType;
     cout << "Enter the new type: "<<endl;
     cin >> newType;
+    while (newType != "full-time" && newType != "part-time") {
+        cout << "Error: Please enter the type of work (full-time / part-time): "<<endl;
+        getline(cin,newType);
+    }
 
 
     ifstream inputFile("job.txt");
@@ -1206,17 +1176,25 @@ void addJob(){
     cout<<"Enter the job's name"<<endl;
     cin.ignore();
     getline(cin,nameJ);
+    while (!isOnlyLetters(nameJ)){
+        cout<<"Enter only letters";
+        cin>>nameJ;
+    }
 
     cout<<"Enter the job's area"<<endl;
     getline(cin,areaJ);
 
-    cout<<"Enter the job's type (full-time / part-time)"<<endl;
+    cout<<"Enter the job's type in format: (full-time / part-time)"<<endl;
     getline(cin,typeJ);
+    while (typeJ != "full-time" && typeJ != "part-time") {
+        cout << "Error: Please enter the type of work (full-time / part-time): "<<endl;
+        getline(cin,typeJ);
+    }
 
 
     ofstream file("job.txt", ios::app);
     if (file.is_open()) {
-        file <<"Job name: " << nameJ <<" publish by: "<<employerName<<endl;
+        file <<"Job name: " << nameJ <<" publish by: "<< employerName<<endl;
         file <<"Area: " << areaJ <<endl;
         file <<"Years of experience required: "<<years_experienceJ<<endl;
         file <<"The salary is: "<<salaryJ<<endl;
@@ -1927,7 +1905,8 @@ void displayLikedJobs() {
 
         inFile.close();
     } else {
-        std::cerr << "Error opening file for displaying liked jobs.\n";
+        std::cout << "you didnt like any job offer.\n";
+        cout<<candidateName<<endl;
     }
 }
 //------------------------------------------------> check
@@ -1963,12 +1942,10 @@ bool isValidEmail(const string& email) {
 bool isValidID(const string& id) {
     if (id.length() != 9)
         return false;
-
     for (char ch : id) {
         if (!isdigit(ch))
             return false;
     }
-
     return true;
 }
 bool isValidPhoneNumber(const string& phone) {
@@ -1980,20 +1957,4 @@ bool isValidPhoneNumber(const string& phone) {
             return false;
     }
     return true;
-}
-bool isValidEducation(const string& education) {
-    return (education == "High school level" || education == "BA" || education == "Master's degree" || education == "Doctorate");
-}
-bool isValidJob(const string& desiredJob) {
-    for (char ch : desiredJob) {
-        if (!isalpha(ch) && !isspace(ch))
-            return false;
-    }
-    return true;
-}
-bool isValidNumber(int candidateExperience) {
-    return (candidateExperience >= 0);
-}
-bool isValidAddress(const string& address) {
-    return !address.empty();
 }

@@ -1,49 +1,21 @@
-Job name: cleaner publish by: avishag
+Job name: Software publish by: David
+Area: tel-aviv
+Years of experience required: 10
+The salary is: 10000
+Job's type: full-time
+Published: 6/3/2024
+
+Job name: sale-woman publish by: Yael
 Area: ashdod
-Years of experience required: 1
-The salary is: 3000
-Job's type: full-time
+Years of experience required: 2
+The salary is: 1800
+Job's type: full-time 
 Published: 6/3/2024
 
-Job name: driver publish by: tamar
-Area: jerusalem
-Years of experience required: 5
-The salary is: 5000
-Job's type: full-time
-Published: 6/3/2024
-
-Job name: pulisher publish by: merav
+Job name: analyst publish by: Sara
 Area: ashdod
-Years of experience required: 5
-The salary is: 3500
-Job's type: part-time
-Published: 6/3/2024
-
-Job name: techer publish by: zohar
-Area: jerusalem
-Years of experience required: 4
-The salary is: 6700
+Years of experience required: 10
+The salary is: 11000
 Job's type: full-time
-Published: 6/3/2024
-
-Job name: Software publish by: Yaron
-Area: jerusalem
-Years of experience required: 4
-The salary is: 6700
-Job's type: full-time
-Published: 6/3/2024
-
-Job name: manager publish by: Zohar
-Area: dimona
-Years of experience required: 3
-The salary is: 2000
-Job's type: full-time
-Published: 6/3/2024
-
-Job name: temp teacher publish by: Zohar
-Area: dimona
-Years of experience required: 8
-The salary is: 2010
-Job's type: part-time
 Published: 6/3/2024
 
